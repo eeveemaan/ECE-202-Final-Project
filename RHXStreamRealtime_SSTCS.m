@@ -59,7 +59,7 @@ global timestep
 % If this is the first time 'run' has been clicked, first initialize TCP
 % communication, send commands to initialize RHX software's settings, and
 % create plotting figure
-numAmpChannels = 0;
+numAmpChannels = 2;
 StartChannel = 13;
 if initialized == 0
     
