@@ -2,7 +2,7 @@
 
 **Trial_X.m:** plays an audio (X) of random type and displays the type. Useful for guessing. Packaged into PlaySoundSel(sel). <br/>
 
-**PlaySoundSel.m:** Sel= 1-Blackman filtered sine, 2-Blackman filtered gaussian
+**PlaySoundSel.m:** Sel= 1-Blackman filtered sine, 2-Blackman filtered gaussian. Line 38 initializes to 2. Can be changed via terminal. 
 3-Plain gaussian, 4-Homophasic-Antiphasic. Returns 1 or -1 depending on type played. <br/>
 
 **disp_arrows.m:** Displays arrows around a head. Needs to be rewritten to take inputs based on the audio we played and the guess based on user EEG. <br/>

@@ -30,10 +30,12 @@ global savedata
 global savetime
 global savesound;
 global savesoundblock;
+global SoundSel;
 
 savedata=[];
 savetime=[];
 savesound=[];
+SoundSel=2;
 
 % When 'run' is clicked - begin realtime streaming and plotting
 function run(runButtonGroup)
@@ -394,6 +396,7 @@ global twaveformdata
 global savedata
 global savetime
 global savesound
+global SoundSel
 
 updateUIStatus('Stopped');
 sendCommand('set runmode stop');
@@ -401,7 +404,20 @@ stopped = 1;
 read(tspikedata);
 read(twaveformdata);
 
-savefname=strcat("Private/demo ",string(datetime('now',format='MM-dd_HHmmSS')),".mat");
+if(SoundSel==1)
+    WhatSound="BFsine_";
+elseif(SoundSel==2)
+    WhatSound="BFwhite_";
+elseif(SoundSel==3)
+    WhatSound="PlainWhite_";
+elseif(SoundSel==4)
+    WhatSound="HomoAnti_";
+end
+
+% Selections: 1-Blackman filtered sine, 2-Blackman filtered gaussian
+% 3-Plain gaussian 4-Homophasic-Antiphasic,
+
+savefname=strcat("Private/",WhatSound,string(datetime('now',format='MM-dd_HHmmSS')),".mat");
 save(savefname,"savetime","savedata","savesound");
 savedata=[];
 savetime=[];
@@ -653,7 +669,8 @@ function playSoundCallback()
 %[y, Fs] = audioread('sound.wav'); 
 % Play the audio
 %sound(y, Fs);
-WhatSound=PlaySoundSel(3);
+global SoundSel;
+WhatSound=PlaySoundSel(SoundSel);
 global amplifierTimestampsIndex;
 global savesoundblock;
 savesoundblock(1,amplifierTimestampsIndex)=WhatSound;
