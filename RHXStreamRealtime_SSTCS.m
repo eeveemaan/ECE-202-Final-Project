@@ -35,7 +35,6 @@ global SoundSel;
 savedata=[];
 savetime=[];
 savesound=[];
-SoundSel=2;
 
 % When 'run' is clicked - begin realtime streaming and plotting
 function run(runButtonGroup)
@@ -552,6 +551,7 @@ global hs
 global ampDataFigure
 global initialized
 global currentPlotBand
+global SoundSel
 % Add the UI components
 hs = addUIComponents();
 % Make figure visible after adding components
@@ -560,19 +560,21 @@ hs.fig.Visible = 'on';
 ampDataFigure = 0;
 initialized = 0;
 currentPlotBand = 'Wide';
+SoundSel = 1;
 end
 
 % Populate the UI with the components it needs
 function hs = addUIComponents()
+global SoundSel
 % Add components, save handles in a struct
 hs.mainUI = uifigure('Name', 'RHX Stream GUI',...
-    'Position', [50, 50, 300, 164]);
+    'Position', [50, 50, 470, 164]);
 hs.statusText = uilabel(hs.mainUI,...
     'Text', 'Stopped',...
-    'Position', [10, 40, 250, 22]);
+    'Position', [10, 45, 250, 22]);
 hs.bytesInPort = uilabel(hs.mainUI,...
     'Text', 'Bytes in Port: ',...
-    'Position', [10, 10, 250, 22]);
+    'Position', [10, 25, 250, 22]);
 hs.runButtonGroup = uibuttongroup(hs.mainUI,...
     'Position', [10, 72, 120, 82]);
 hs.runButton = uitogglebutton(hs.runButtonGroup,...
@@ -606,6 +608,27 @@ hs.playSoundButton = uibutton(hs.mainUI,...
     'Text', 'Play Sound',...
     'Position', [10, 4, 100, 22],...
     'ButtonPushedFcn', @(btn,event) playSoundCallback());
+
+% Add Sound Options
+hs.soundPickGroup = uibuttongroup(hs.mainUI,...
+    'Position', [250, 52, 190, 102]);
+hs.blackmanSineButton = uiradiobutton(hs.soundPickGroup,...
+    'Text', 'Blackman Filtered Sine',...
+    'Position', [10, 77, 200, 22],...
+    'Value', 1);
+hs.blackmanGaussButton = uiradiobutton(hs.soundPickGroup,...
+    'Text', 'Blackman Filtered Gaussian',...
+    'Position', [10, 52, 200, 22],...
+    'Value', 0);
+hs.plainGaussButton = uiradiobutton(hs.soundPickGroup,...
+    'Text', 'Plain Gaussian',...
+    'Position', [10, 27, 200, 22],...
+    'Value', 0);
+hs.haPhasicButton = uiradiobutton(hs.soundPickGroup,...
+    'Text', 'Homophasic-Antiphasic',...
+    'Position', [10, 2, 200, 22],...
+    'Value', 0);
+set(hs.soundPickGroup, 'SelectionChangedFcn', @soundButtonChanged);
 end
 
 
@@ -674,4 +697,19 @@ WhatSound=PlaySoundSel(SoundSel);
 global amplifierTimestampsIndex;
 global savesoundblock;
 savesoundblock(1,amplifierTimestampsIndex)=WhatSound;
+end
+
+function soundButtonChanged(source, event)
+global SoundSel;
+soundText = event.NewValue.Text;
+
+if strcmp(soundText, 'Blackman Filtered Sine')
+    SoundSel = 1;
+elseif strcmp(soundText, 'Blackman Filtered Gaussian')
+    SoundSel = 2;
+elseif strcmp(soundText, 'Plain Gaussian')
+    SoundSel = 3;
+else
+    SoundSel = 4;
+end
 end
