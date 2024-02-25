@@ -401,7 +401,7 @@ stopped = 1;
 read(tspikedata);
 read(twaveformdata);
 
-savefname=strcat("demo ",string(datetime('now',format='MM-dd_HHmmSS')),".mat");
+savefname=strcat("Private/demo ",string(datetime('now',format='MM-dd_HHmmSS')),".mat");
 save(savefname,"savetime","savedata","savesound");
 savedata=[];
 savetime=[];

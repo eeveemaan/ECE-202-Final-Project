@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/matlab,windows,macos,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=matlab,windows,macos,python
 
+Private/*
+
 ### macOS ###
 # General
 .DS_Store
