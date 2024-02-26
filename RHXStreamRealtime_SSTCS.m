@@ -35,6 +35,7 @@ global SoundSel;
 savedata=[];
 savetime=[];
 savesound=[];
+InitSound;
 
 % When 'run' is clicked - begin realtime streaming and plotting
 function run(runButtonGroup)

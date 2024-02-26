@@ -1,45 +1,42 @@
-function WhatSound = PlaySoundSel(sel)
-
-Fs = 44100;
-T = 0.018; dt = 1/Fs; t =0:dt:T;
-pad =0.2*Fs;
-y = zeros(length(t)+pad,2);
-
-ITD = 4e-4;
-ILD = 1;
-
-ii = randi(2);
-
-f  = 500;
-So =    (1*sin(2*pi*f*t)).*blackman(length(t))';
-Spi = -((1*sin(2*pi*f*t)).*blackman(length(t))');
-
-
 % Selections: 1-Blackman filtered sine, 2-Blackman filtered gaussian
 % 3-Plain gaussian 4-Homophasic-Antiphasic,
 
+function WhatSound = PlaySoundSel(sel)
+global y_bfs
+global y_bfw
+global y_w
+global y_homo
+global y_anti
+
+Fs = 44100;
+ii = randi(2);
+
 if(sel==1)
-    y(1:length(t),ii) = 0.1*sin(2*pi*500*t)'.*blackman(length(t)); 
-    delta = round(ITD*Fs,0);
-    y(1+delta:length(t),3-ii)=y(1:length(t)-delta,ii);
+    if(ii==1)
+        sound(y_bfs,Fs);
+    else
+        sound(flip(y_bfs,2),Fs);
+    end    
 elseif(sel==2)
-    y(1:length(t),ii) = 0.1*randn(length(t),1).*blackman(length(t)); 
-    delta = round(ITD*Fs,0);
-    y(1+delta:length(t),3-ii)=y(1:length(t)-delta,ii);
+    if(ii==1)
+        sound(y_bfw,Fs);
+    else
+        sound(flip(y_bfw,2),Fs);
+    end        
 elseif(sel==3)
-    y(1:length(t),ii) = 0.1*randn(length(t),1); 
-    delta = round(ITD*Fs,0);
-    y(1+delta:length(t),3-ii)=y(1:length(t)-delta,ii);
+    if(ii==1)
+        sound(y_w,Fs);
+    else
+        sound(flip(y_w,2),Fs);
+    end    
 else    
     % -1: Homo, 1: Anti
     if(ii==1)
-        y(1:length(t),2)=So;
+        sound(y_homo,Fs);
     else
-        y(1:length(t),2)=Spi;
+        sound(y_anti,Fs);
     end
 end
-sound(y,Fs)
-
 
 if(ii==1)
     disp("left/homo");
