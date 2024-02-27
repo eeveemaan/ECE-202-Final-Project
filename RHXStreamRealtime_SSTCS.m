@@ -689,12 +689,10 @@ arrayIndex = arrayIndex + 5;
 end
 
 function playSoundCallback()
-% Read an audio file
-%[y, Fs] = audioread('sound.wav'); 
-% Play the audio
-%sound(y, Fs);
 global SoundSel;
-WhatSound=PlaySoundSel(SoundSel);
+
+%WhatSound=PlaySoundSel(SoundSel); % Old fn, uses normal sound fn
+WhatSound=PSS_AP(SoundSel);        % Uses the new audio playback thingy
 global amplifierTimestampsIndex;
 global savesoundblock;
 savesoundblock(1,amplifierTimestampsIndex)=WhatSound;

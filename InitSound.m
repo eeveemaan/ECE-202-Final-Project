@@ -1,9 +1,3 @@
-global y_bfs
-global y_bfw
-global y_w
-global y_homo
-global y_anti
-
 Fsound = 44100;
 T = 0.018; dt = 1/Fsound; t =0:dt:T;
 pad =0.2*Fsound;
@@ -37,4 +31,22 @@ y_w(1+delta:length(t),2)=y_w(1:length(t)-delta,1);
 y_homo(1:length(t),:)=[So; So]';
 y_anti(1:length(t),:)=[So; Spi]';
 
+global y_bfs_L
+global y_bfs_R
+global y_bfw_L
+global y_bfw_R
+global y_w_L
+global y_w_R
+global y_H
+global y_A
+y_bfs_L = audioplayer(y_bfs,Fsound);
+y_bfs_R = audioplayer(flip(y_bfs,2),Fsound);
+y_bfw_L = audioplayer(y_bfw,Fsound);
+y_bfw_R = audioplayer(flip(y_bfw,2),Fsound);
+y_w_L = audioplayer(y_w,Fsound);
+y_w_R = audioplayer(flip(y_w,2),Fsound);
+y_H = audioplayer(y_homo,Fsound);
+y_A = audioplayer(y_anti,Fsound);
+
 clear("delta","dt","T","ILD","ITD","pad","t","So","Spi");
+%clear("y_bfs","y_bfw","y_w","y_homo","y_anti");
