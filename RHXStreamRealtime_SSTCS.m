@@ -630,6 +630,18 @@ hs.haPhasicButton = uiradiobutton(hs.soundPickGroup,...
     'Position', [10, 2, 200, 22],...
     'Value', 0);
 set(hs.soundPickGroup, 'SelectionChangedFcn', @soundButtonChanged);
+
+% Sound function buttons
+% hs.soundFuncGroup = uibuttongroup(hs.mainUI,...
+%     'Position', [120, 4, 230, 30]);
+hs.contSoundButton = uibutton(hs.mainUI,...
+    'Text', 'Continuous',...
+    'Position', [130, 4, 100, 22],...
+    'ButtonPushedFcn', @(btn,event) playContSound());
+hs.contSoundButton = uibutton(hs.mainUI,...
+    'Text', 'Pulsed',...
+    'Position', [240, 4, 100, 22],...
+    'ButtonPushedFcn', @(btn,event) playPulseSound());
 end
 
 
@@ -710,5 +722,29 @@ elseif strcmp(soundText, 'Plain Gaussian')
     SoundSel = 3;
 else
     SoundSel = 4;
+end
+end
+
+function playContSound(source, event)
+if strcmp(event.NewValue.Text, 'Continuous')
+    % % may have to modify "run" to play sound, but try without for now
+    % run(source);
+    % [insert timed sound function here]
+    % % in theory, should be able to call "stop" with no changes
+    % stop;
+elseif strcmp(event.NewValue.Text, 'Pulsed')
+    % make it unable to be pressed, if possible
+end
+end
+
+function playPulseSound(source, event)
+if strcmp(event.NewValue.Text, 'Pulsed')
+    % % may have to modify "run" to play sound, but try without for now
+    % run(source);
+    % % [insert timed sound function here]
+    % % in theory, should be able to call "stop" with no changes
+    % stop;
+elseif strcmp(event.NewValue.Text, 'Continuous')
+    % make it unable to be pressed, if possible
 end
 end
