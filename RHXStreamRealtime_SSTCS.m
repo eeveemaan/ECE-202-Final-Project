@@ -37,6 +37,15 @@ savetime=[];
 savesound=[];
 InitSound;
 
+global csound
+csound = timer;
+csound.Period = 1;
+csound.TasksToExecute = 10;
+csound.ExecutionMode = 'fixedRate';
+csound.TimerFcn = @(src, event) playSoundCallback();
+
+%global amplifierTimestamps
+
 % When 'run' is clicked - begin realtime streaming and plotting
 function run(runButtonGroup)
 
@@ -51,6 +60,7 @@ global stopped
 global savedata
 global savetime
 global savesound
+global amplifierTimestamps
 
 % Global variables that should be retained when this function is called
 % multiple times
@@ -62,7 +72,7 @@ global timestep
 % communication, send commands to initialize RHX software's settings, and
 % create plotting figure
 numAmpChannels = 2;
-StartChannel = 13;
+StartChannel = 17;
 if initialized == 0
     
     % Connect to TCP servers
@@ -137,6 +147,7 @@ waveformBytes10Blocks = blocksPerRead * waveformBytesPerBlock;
 % Pre-allocate memory for 10 blocks of waveform data (the amount that's
 % plotted at once)
 amplifierData = 32768 * ones(numAmpChannels, framesPerBlock * 10);
+global amplifierTimestamps
 amplifierTimestamps = zeros(1, framesPerBlock * 10);
 
 % Initialize amplifier timestamps index
@@ -368,7 +379,7 @@ while get(runButtonGroup.Children(2), 'Value')
             if chunkCounter ~= 1
                 hold on
             end
-            plot(amplifierTimestamps, savesoundblock, 'Color', 'blue');
+            plot(amplifierTimestamps, savesoundblock(1:length(amplifierTimestamps)), 'Color', 'blue');
             hold off
             latestPlottedWaveformTimestamp = amplifierTimestamps(end); 
 
@@ -630,8 +641,13 @@ hs.haPhasicButton = uiradiobutton(hs.soundPickGroup,...
     'Position', [10, 2, 200, 22],...
     'Value', 0);
 set(hs.soundPickGroup, 'SelectionChangedFcn', @soundButtonChanged);
-end
 
+% Add "Loop Sound" button
+hs.LoopSoundButton = uibutton(hs.mainUI,...
+    'Text', 'Loop sound',...
+    'Position', [200, 4, 300, 22],...
+    'ButtonPushedFcn', @(btn,event) LoopSoundCallback());
+end
 
 
 % Band button change callback function
@@ -711,4 +727,10 @@ elseif strcmp(soundText, 'Plain Gaussian')
 else
     SoundSel = 4;
 end
+end
+
+function LoopSoundCallback()
+    global csound
+    csound.Period = 1;
+    start(csound);
 end
