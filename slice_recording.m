@@ -1,10 +1,16 @@
+%% Read file
+[fname,fpath] = uigetfile("./Private/*.mat");
+load(strcat(fpath,fname));
+
+
 %% Quick filter
 Fs = 5000;
 Tsnip = 0.1; N = Fs*Tsnip;
 t = 0:1/Fs:Tsnip;
 lsave = length(savedata(1,:));
-data_f = fft(savedata(1,:)); data_f(50/Fs*lsave+1:end-50/Fs*lsave)=0;
-data_filt = real(ifft(data_f));
+%data_f = fft(savedata(1,:)); data_f(50/Fs*lsave+1:end-50/Fs*lsave)=0;
+%data_filt = real(ifft(data_f));
+data_filt = savedata(1,:);
 
 figure;
 plot(savetime(1000:end-1000),data_filt(1000:end-1000))
@@ -67,5 +73,6 @@ end
 
 
 %% Welch
-pwelch(data_ds(1,:),N,0,N,Fs,"onesided","psd")
-xlim([0 50])
+%pwelch(data_ds(1,:),N,0,N,Fs,"onesided","psd")
+pwelch(data_filt(1,:),N,0,N,Fs,"onesided","psd")
+%xlim([0 .050])
