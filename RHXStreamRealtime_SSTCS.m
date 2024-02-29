@@ -39,8 +39,8 @@ InitSound;
 
 global csound
 csound = timer;
-csound.Period = 1;
-csound.TasksToExecute = 10;
+csound.Period = 3;
+csound.TasksToExecute = 100;
 csound.ExecutionMode = 'fixedRate';
 csound.TimerFcn = @(src, event) playSoundCallback();
 
@@ -72,7 +72,7 @@ global timestep
 % communication, send commands to initialize RHX software's settings, and
 % create plotting figure
 numAmpChannels = 2;
-StartChannel = 17;
+StartChannel = 19;
 if initialized == 0
     
     % Connect to TCP servers
@@ -743,7 +743,7 @@ end
 
 function LoopSoundCallback()
     global csound
-    csound.Period = 1;
+    csound.Period = 3;
     start(csound);
 end
 
