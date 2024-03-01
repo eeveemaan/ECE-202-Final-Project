@@ -123,15 +123,15 @@ t = 0:1/Fs:Tsnip;
 
 figure('Position',[1000 1000 1000 1000]);
 subplot(1,2,1)
-[~,~,~,ps] = spectrogram(data_ds(2,:),100,50,200,100);
-spectrogram(data_ds(2,:),100,50,200,100); 
+[~,~,~,ps1] = spectrogram(data_ds(1,:),100,50,200,100);
+spectrogram(data_ds(1,:),100,50,200,100); 
 view(90,-90); colormap('jet'); caxis([-5 25]);
 c=colorbar; ylabel(c,'Power/frequency (dB/Hz)')
 % hold on;
 % plot(0.1*ones(length(idx_sound),1),savetime(idx_sound)/60,linewidth=5,Marker='|')
 
 subplot(1,2,2)
-[~,~,~,ps] = spectrogram(data_ds(2,:),100,50,200,100);
+[~,~,~,ps2] = spectrogram(data_ds(2,:),100,50,200,100);
 spectrogram(data_ds(2,:),100,50,200,100); 
 view(90,-90); colormap('jet'); caxis([-5 25]);
 c=colorbar; ylabel(c,'Power/frequency (dB/Hz)')
