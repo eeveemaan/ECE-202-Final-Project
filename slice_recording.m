@@ -1,11 +1,11 @@
 %% Read file
-[fname,fpath] = uigetfile("./Private/*.mat");
+[fname,fpath] = uigetfile("./data/*.mat");
 load(strcat(fpath,fname));
 
 
 %% Quick filter
 Fs = 5000;
-Tsnip = 2; N = Fs*Tsnip;
+Tsnip = 0.02; N = Fs*Tsnip;
 t = 0:1/Fs:Tsnip;
 lsave = length(savedata(1,:));
 %data_f = fft(savedata(1,:)); data_f(50/Fs*lsave+1:end-50/Fs*lsave)=0;
@@ -47,7 +47,6 @@ text(Tsnip/2*1000+5,0.8*ax.YLim(1),"Sound","FontSize",12,"FontWeight",'bold',"Fo
 title('sound centered epochs overlayed'); xlabel('Time (ms)'); ylabel('Potential (\muV)');
 legend('Average','Individual')
 
-
 %% FFT of snippets
 snippets_f = zeros(length(idx_sound),N+1);
 % figure;
@@ -82,11 +81,12 @@ data_f = fft(savedata(1,:)); data_f(50/Fs*lsave+1:end-50/Fs*lsave)=0;
 data_filt = real(ifft(data_f));
 
 % Downsampling
-data_ds = data_filt(1,1:50:end);
-idx_ds = int32(round(idx_sound/50,0));
+D = 50;
+data_ds = data_filt(1,1:D:end);
+idx_ds = int32(round(idx_sound/D,0));
 
 % Fs original: 5000, downsample => 250 (if / 20), => 100 (if / 50)
-Fs = 100;
+Fs = Fs/D;
 Tsnip = 0.1; N = Fs*Tsnip;
 t = 0:1/Fs:Tsnip;
 
