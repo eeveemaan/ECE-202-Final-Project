@@ -3,14 +3,15 @@
 load(strcat(fpath,fname));
 
 %% Variables
-after = 0.5;    % [0,1] fraction/percentage of epoch window that is after sound played
+after = 1;    % [0,1] fraction/percentage of epoch window that is after sound played
 
 %% Quick filter
 Fs = 5000;
 Tsnip = 1; N = Fs*Tsnip;
 t = 0:1/Fs:Tsnip;
 lsave = length(savedata(1,:));
-data_f = [fft(savedata(1,:)); fft(savedata(2,:))]; data_f(:,50/Fs*lsave+1:end-50/Fs*lsave)=0;
+idx_filt=int32(50/Fs*lsave); % Sets the freq after which you want to set to 0. 
+data_f = [fft(savedata(1,:)); fft(savedata(2,:))]; data_f(:,idx_filt:end-idx_filt)=0;
 data_filt = real([ifft(data_f(1,:)); ifft(data_f(2,:))]);
 % data_filt = savedata(:,:);
 
@@ -39,15 +40,15 @@ snippets_d = zeros(length(idx_sound),N+1,2);
 % figure;
 for ii=1:L
     for jj=1:2
-%         snippets_d(ii,:,jj)=data_filt(jj,idx_sound(ii)-round(N*(1-after),0):idx_sound(ii)+round(N*after,0));
-        snippets_d(ii,:,jj)=data_filt(jj,idx_sound(ii)-N/2:idx_sound(ii)+N/2);
+        snippets_d(ii,:,jj)=data_filt(jj,idx_sound(ii)-round(N*(1-after),0):idx_sound(ii)+round(N*after,0));
+        %snippets_d(ii,:,jj)=data_filt(jj,idx_sound(ii)-N/2:idx_sound(ii)+N/2);
         %snippets_d(ii,:)=data_ds(1,idx_sound(ii)-N/2:idx_sound(ii)+N/2);
         % subplot(L,1,ii)
         % plot(t,snippets_d(ii,:))
     end
 end
 
-%% Plot overlay
+% Plot overlay
 figure('Position',[0 10 600 600]);
 subplot(2,1,1);
 plot(t*1e3,mean(snippets_d(:,:,1),1),'Color',[0.2 0.5 0.9 1],'LineWidth',2); hold on;
@@ -107,7 +108,7 @@ pwelch(data_filt(2,:),Nwelch,0,Nwelch,Fs,"onesided","psd")
 xlim([0 .050])
 
 %% Spectrogram
-data_f = [fft(savedata(1,:)); fft(savedata(2,:))]; data_f(:,50/Fs*lsave+1:end-50/Fs*lsave)=0;
+data_f = [fft(savedata(1,:)); fft(savedata(2,:))]; data_f(:,idx_filt+1:end-idx_filt)=0;
 data_filt = real([ifft(data_f(1,:)); ifft(data_f(2,:))]);
 
 % Downsampling
