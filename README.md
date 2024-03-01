@@ -38,4 +38,20 @@ Running through the code once line by line,
 
 Rest of the code is just misc stuff. Changes we've made:
 - 589-593: Inclusion of sound button and attaching playsoundcallback to it. 
-- 651-660: PlaySoundCallback: Plays a sound using playsoundsel, records sound playing to the savesoundblock variable. 
+- 651-660: PlaySoundCallback: Plays a sound using playsoundsel, records sound playing to the savesoundblock variable.
+
+## TO DO
+In slicerecording.m:
+- Variables
+    - Tsnip: time window/snippets of epoch
+    - D: downsampling frequency
+- Loading files in "Feb 28" folder
+    - savesound: records sound type as integer values at specific time index (0: none, 1:left, 2:right, 3:silence)
+        - Want to analyze 0 & 3 to get a baseline (of sound not being played) 
+    - Want to experiment with Tsnip and D to create a table of values for frequencies/results
+        - Goal is to be able to compare the results and pick the best parameters/conditions for analysis
+- Minor things
+    - Make code more flexible
+        - Easily adjust time window of epoch (%% Split out snippets block)
+            - Amount of time before/after sound played
+            - Will also need to adjust window of subsequent plot
