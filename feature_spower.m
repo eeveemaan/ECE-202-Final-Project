@@ -1,6 +1,6 @@
 %% Load file and snip recording
 Tsnip = 0.1;          %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
-after = 0.99;
+after = 1.5;
 snip_recording;
 
 %% Initializing left feature list
@@ -48,8 +48,14 @@ R = corrcoef(A);
 % Do y'all think using numerical labels for events is valid? Should we be
 % using ANOVA or something along those lines?
 
-scatter(events,features(:,1))
+scatter(events,features(:,1)); ylim([0 1e6]);
 
 % Need to agree on a way to save this data!
 % Also need to figure out how to handle 2D features!
 
+%% ANOVA
+%events=[string(char(ones(lcount,1)*'left')); string(char(ones(rcount,1)*'right')); string(char(ones(scount,1)*'silence'))];
+events=[repmat("Left",lcount,1);repmat("Right",rcount,1);repmat("Silence",scount,1)];
+
+%A = table(events,features(:,1),features(:,2));
+aov=anova(events,features);
