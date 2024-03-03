@@ -40,11 +40,14 @@ for ii=1:scount
 end
 
 %% Compute Correlation
-events=[1*ones(lcount,1); 2*ones(rcount,1); 3*ones(scount,1)];
+events=[-1*ones(lcount,1); 1*ones(rcount,1); 0*ones(scount,1)];
 features=[fval1_l; fval1_r; fval1_s];
 
 A = [events features];
 R = corrcoef(A);
+
+% Do y'all think using numerical labels for events is valid? Should we be
+% using ANOVA or something along those lines?
 
 scatter(events,features(:,1))
 
