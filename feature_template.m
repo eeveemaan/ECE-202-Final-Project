@@ -11,7 +11,7 @@ for ii=1:lcount
     % Extract feature here
     for jj=1:2
         % One channel at a time
-        fval1_l(ii,jj)=0;
+        fval1_l(ii,jj)=randn(1);
     end
 end
 
@@ -23,7 +23,7 @@ for ii=1:rcount
     % Extract feature here
     for jj=1:2
         % One channel at a time
-        fval1_r(ii,jj)=0;
+        fval1_r(ii,jj)=randn(1);
     end
 end
 
@@ -35,7 +35,7 @@ for ii=1:scount
     % Extract feature here
     for jj=1:2
         % One channel at a time
-        fval1_s(ii,jj)=0;
+        fval1_s(ii,jj)=randn(1);
     end
 end
 
@@ -46,4 +46,7 @@ features=[fval1_l; fval1_r; fval1_s];
 A = [events features];
 R = corrcoef(A);
 
+scatter(events,features(:,1))
+
 % Need to agree on a way to save this data!
+% Also need to figure out how to handle 2D features!
