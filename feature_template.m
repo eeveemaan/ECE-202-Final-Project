@@ -56,3 +56,11 @@ scatter(events,features(:,1))
 % Need to agree on a way to save this data!
 % Also need to figure out how to handle 2D features!
 
+%% ANOVA
+for jj=1:2
+    data_anova=NaN(max([lcount rcount scount]),3);
+    data_anova(1:lcount,1)=fval1_l(:,jj);data_anova(1:rcount,2)=fval1_r(:,jj);data_anova(1:scount,3)=fval1_s(:,jj);
+    fprintf("Channel %d\n",jj);
+    aov=anova(data_anova);
+    disp(aov);
+end    

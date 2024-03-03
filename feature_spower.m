@@ -54,8 +54,10 @@ scatter(events,features(:,1)); ylim([0 1e6]);
 % Also need to figure out how to handle 2D features!
 
 %% ANOVA
-%events=[string(char(ones(lcount,1)*'left')); string(char(ones(rcount,1)*'right')); string(char(ones(scount,1)*'silence'))];
-events=[repmat("Left",lcount,1);repmat("Right",rcount,1);repmat("Silence",scount,1)];
-
-%A = table(events,features(:,1),features(:,2));
-aov=anova(events,features);
+for jj=1:2
+    data_anova=NaN(max([lcount rcount scount]),3);
+    data_anova(1:lcount,1)=SigPower_l(:,jj);data_anova(1:rcount,2)=SigPower_r(:,jj);data_anova(1:scount,3)=SigPower_s(:,jj);
+    fprintf("Channel %d\n",jj);
+    aov=anova(data_anova);
+    disp(aov);
+end    
