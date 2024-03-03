@@ -91,3 +91,50 @@ for idx_cell=1:length(cell_snippets)
     legend('Average','Individual')
 end
 sgtitle("sound centered epochs overlayed")
+
+%% FFT of snippets
+snippets_f = zeros(length(idx_sound),N+1,2);
+snippets_fl = zeros(length(idx_sound),N+1,2);
+snippets_fr = zeros(length(idx_sound),N+1,2);
+snippets_fs = zeros(length(idx_sound),N+1,2);
+% figure;
+f = 0:Fs/N:Fs;
+for ii=1:L
+    for jj=1:2
+        snippets_f(ii,:,jj) = fft(snippets_d(ii,:,jj));
+        %snippets_f(ii,50:end-50,1) = 0;
+    end
+
+    if(savesound(idx_sound(ii))==1)
+        snippets_fl(lcounter,:,:)=snippets_f(ii,:,:);
+        lcounter=lcounter+1;
+    elseif(savesound(idx_sound(ii))==2)
+        snippets_fr(rcounter,:,:)=snippets_f(ii,:,:);
+        rcounter=rcounter+1;
+    elseif(savesound(idx_sound(ii))==3)
+        snippets_fs(scounter,:,:)=snippets_f(ii,:,:);
+        scounter=scounter+1;
+    end
+end
+
+cell_snippets = {snippets_f, snippets_fl, snippets_fr, snippets_fs; "All", "Left", "Right", "Silence"};
+xlimits = [0 50]; ylimits=[0 2e4];
+figure('Position',[0 10 1200 600]);
+for idx_cell=1:length(cell_snippets)
+    subplot(2,4,idx_cell);
+    plot(f,mean(abs(cell_snippets{1, idx_cell}(:,:,1)),1),'Color',[0.2 0.5 0.9 1],'LineWidth',2); hold on;
+    plot(f,abs(cell_snippets{1,idx_cell}(:,:,1)),'Color',[0.2 0.5 0.9 0.1]);
+    ax = gca; ax.LineWidth = 2; ax.FontName = 'Arial'; ax.FontSize = 12;
+    xlim(xlimits); ylim(ylimits);
+    title(cell_snippets{2, idx_cell} + 'Channel 19'); xlabel('Frequency (Hz)'); ylabel('Potential (\muV)'); 
+    legend('Average','Individual')
+
+    subplot(2,4,idx_cell+4);
+    plot(f,mean(abs(cell_snippets{1,idx_cell}(:,:,2)),1),'Color',[0.2 0.5 0.9 1],'LineWidth',2); hold on;
+    plot(f,abs(cell_snippets{1,idx_cell}(:,:,2)),'Color',[0.2 0.5 0.9 0.1]);
+    ax = gca; ax.LineWidth = 2; ax.FontName = 'Arial'; ax.FontSize = 12;
+    xlim(xlimits); ylim(ylimits);   
+    title(cell_snippets{2, idx_cell} + 'Channel 20'); xlabel('Frequency (Hz)'); ylabel('Potential (\muV)');
+    legend('Average','Individual')
+end
+sgtitle("Epochs: Frequency Domain")

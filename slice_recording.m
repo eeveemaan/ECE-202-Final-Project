@@ -4,7 +4,7 @@ load(strcat(fpath,fname));
 
 %% Quick filter
 Fs = 5000;
-Tsnip = 1; N = Fs*Tsnip;
+Tsnip = 0.5; N = Fs*Tsnip;
 t = 0:1/Fs:Tsnip;
 lsave = length(savedata(1,:));
 idx_filt=int32(50/Fs*lsave); % Sets the freq after which you want to set to 0. 
@@ -96,7 +96,7 @@ f = 0:Fs/N:Fs;
 for ii=1:L
     for jj=1:2
         snippets_f(ii,:,jj) = fft(snippets_d(ii,:,jj));
-        snippets_f(ii,50:end-50,1) = 0;
+        %snippets_f(ii,50:end-50,1) = 0;
     end
 
     if(savesound(idx_sound(ii))==1)
@@ -110,23 +110,6 @@ for ii=1:L
         scounter=scounter+1;
     end
 end
-
-
-% Plot overlay
-% figure('Position',[0 10 600 600]);
-% subplot(2,1,1);
-% plot(f,mean(abs(snippets_f(:,:,1)),1),'Color',[0.2 0.5 0.9 1],'LineWidth',2); hold on;
-% plot(f,abs(snippets_f(:,:,1)),'Color',[0.2 0.5 0.9 0.1]); xlim([0 50]);
-% ax = gca; ax.LineWidth = 2; ax.FontName = 'Arial'; ax.FontSize = 12;
-% title('Channel 19'); xlabel('Frequency (Hz)'); ylabel('Strength (\muV)');
-% legend('Average','Individual')
-% 
-% subplot(2,1,2);
-% plot(f,mean(abs(snippets_f(:,:,2)),1),'Color',[0.2 0.5 0.9 1],'LineWidth',2); hold on;
-% plot(f,abs(snippets_f(:,:,2)),'Color',[0.2 0.5 0.9 0.1]); xlim([0 50]);
-% ax = gca; ax.LineWidth = 2; ax.FontName = 'Arial'; ax.FontSize = 12;
-% title('Channel 20'); xlabel('Frequency (Hz)'); ylabel('Strength (\muV)');
-% legend('Average','Individual')
 
 cell_snippets = {snippets_f, snippets_fl, snippets_fr, snippets_fs; "All", "Left", "Right", "Silence"};
 xlimits = [0 50]; ylimits=[0 2e4];
@@ -148,7 +131,7 @@ for idx_cell=1:length(cell_snippets)
     title(cell_snippets{2, idx_cell} + 'Channel 20'); xlabel('Frequency (Hz)'); ylabel('Potential (\muV)');
     legend('Average','Individual')
 end
-sgtitle("sound centered epochs overlayed")
+sgtitle("Epochs: Frequency Domain")
 
 
 %% Welch
