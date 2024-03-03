@@ -1,6 +1,6 @@
 %% Load file and snip recording
-Tsnip = 0.1;          %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
-after = 1.5;
+Tsnip = 0.2;          %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
+after = 1;
 snip_recording;
 
 %% Initializing left feature list
@@ -60,4 +60,4 @@ for jj=1:2
     fprintf("Channel %d\n",jj);
     aov=anova(data_anova);
     disp(aov);
-end    
+end
