@@ -3,8 +3,9 @@
 load(strcat(fpath,fname));
 
 %% Quick filter
+% NEEDS TSNIP AND AFTER TO BE SET BEFOREHAND!
 Fs = 5000;
-Tsnip = 1; N = Fs*Tsnip;
+N = Fs*Tsnip;
 t = 0:1/Fs:Tsnip;
 lsave = length(savedata(1,:));
 idx_filt=int32(50/Fs*lsave); % Sets the freq after which you want to set to 0. 
@@ -25,7 +26,7 @@ idx_sound = find(savesound); L=length(idx_sound);
 
 lcount=sum(savesound==1); rcount=sum(savesound==2); scount=sum(savesound==3);
 
-after = 0.5;    % [0,1] fraction/percentage of epoch window that is after sound played
+%after = 0.5;    % [0,1] fraction/percentage of epoch window that is after sound played
 
 % % Downsampling
 % data_ds = data_filt(1,1:20:end);

@@ -1,7 +1,7 @@
 %% Load file and snip recording
+Tsnip = 0.02;          %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
+after = 0.8;
 snip_recording;
-
-%MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
 
 %% Initializing left feature list
 fval1_l = zeros(lcount,2);
