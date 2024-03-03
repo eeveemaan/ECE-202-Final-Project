@@ -50,6 +50,7 @@ R = corrcoef(A);
 % Do y'all think using numerical labels for events is valid? Should we be
 % using ANOVA or something along those lines?
 
+figure;
 scatter(events,features(:,1))
 
 % Need to agree on a way to save this data!
