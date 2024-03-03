@@ -1,4 +1,6 @@
 %% Load file and snip recording
+Tsnip = 0.1;          %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
+after = 0.99;
 snip_recording;
 
 %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
