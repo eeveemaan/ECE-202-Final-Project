@@ -55,8 +55,9 @@ scatter(events,features(:,1)); ylim([0 1e6]);
 
 %% ANOVA
 for jj=1:2
-    data_anova=NaN(max([lcount rcount scount]),3);
-    data_anova(1:lcount,1)=SigPower_l(:,jj);data_anova(1:rcount,2)=SigPower_r(:,jj);data_anova(1:scount,3)=SigPower_s(:,jj);
+    %data_anova=NaN(max([lcount rcount scount]),3);
+    data_anova=NaN(max([lcount scount]),2);
+    data_anova(1:lcount,1)=SigPower_l(:,jj);data_anova(1:scount,2)=SigPower_s(:,jj);
     fprintf("Channel %d\n",jj);
     aov=anova(data_anova);
     disp(aov);
