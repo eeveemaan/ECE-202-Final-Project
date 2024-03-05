@@ -4,7 +4,7 @@ load(strcat(fpath,fname));
 
 %% Quick filter
 Fs = 5000;
-Tsnip = 0.5; N = Fs*Tsnip;
+Tsnip = 0.05; N = Fs*Tsnip;
 t = 0:1/Fs:Tsnip;
 lsave = length(savedata(1,:));
 idx_filt=int32(50/Fs*lsave); % Sets the freq after which you want to set to 0. 
@@ -137,7 +137,7 @@ sgtitle("Epochs: Frequency Domain")
 %% Welch
 %pwelch(data_ds(1,:),N,0,N,Fs,"onesided","psd")
 figure;
-Nwelch=N;
+Nwelch=N*10;
 subplot(2,1,1);
 pwelch(data_filt(1,:),Nwelch,0,Nwelch,Fs,"onesided","psd")
 xlim([0 .050])

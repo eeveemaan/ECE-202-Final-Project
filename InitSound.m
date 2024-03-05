@@ -1,6 +1,7 @@
 Fsound = 44100;
-T = 0.018; dt = 1/Fsound; t =0:dt:T;
-pad =0.2*Fsound;
+T = 1; %T = 0.018; 
+dt = 1/Fsound; t =0:dt:T;
+pad=0; %pad =0.2*Fsound;
 
 y_bfs = zeros(length(t)+pad,2);
 y_bfw = zeros(length(t)+pad,2);
