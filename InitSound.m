@@ -25,7 +25,18 @@ y_bfs(1+delta:length(t),2)=y_bfs(1:length(t)-delta,1);
 y_bfw(1:length(t),1) = 0.1*randn(length(t),1).*blackman(length(t)); 
 y_bfw(1+delta:length(t),2)=y_bfw(1:length(t)-delta,1);
 
-y_w(1:length(t),1) = 0.1*randn(length(t),1); 
+low_pass_filter_base = designfilt('lowpassfir', 'PassbandFrequency', 80, 'StopbandFrequency', 8000, ...
+       'PassbandRipple', 0.5, 'StopbandAttenuation', 60, 'DesignMethod', 'kaiserwin', 'SampleRate', Fsound);
+
+% HPF = designfilt('highpassfir', 'PassbandFrequency', 80, 'StopbandFrequency', 60, ...
+%         'PassbandRipple', 0.5, 'StopbandAttenuation', 60, 'DesignMethod', 'kaiserwin', 'SampleRate', Fsound);
+        
+y_w(1:length(t),1) = filter(low_pass_filter_base,0.1*randn(length(t),1));
+
+%y_w(1:length(t),1) = filter(HPF,y_w(1:length(t),1));
+%y_w(1:length(t),1) = filter(HPF,0.1*randn(length(t),1));
+%y_w(1:length(t),1) = 0.1*randn(length(t),1);
+
 y_w(1+delta:length(t),2)=y_w(1:length(t)-delta,1);
 
 % -1: Homo, 1: Anti
@@ -51,3 +62,5 @@ y_A = audioplayer(y_anti,Fsound);
 
 clear("delta","dt","T","ILD","ITD","pad","t","So","Spi");
 %clear("y_bfs","y_bfw","y_w","y_homo","y_anti");
+
+audiowrite("Sounds/whitenoise_filt.wav",y_w,Fs)
