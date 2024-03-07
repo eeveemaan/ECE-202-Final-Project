@@ -1,0 +1,13 @@
+% Our main script
+
+% Define the sampling frequency
+Fs = 44100; % For example
+
+% Call the filter_definitions_JS function to get filter coefficients
+[b_highpass, a_highpass, b_lowpass, a_lowpass] = filter_definitions_JS(Fs);
+
+% Apply high-pass filter at 200 Hz
+y = filter(b_highpass, a_highpass, y);
+
+% Apply low-pass filter at 7000 Hz
+y = filter(b_lowpass, a_lowpass, y);
