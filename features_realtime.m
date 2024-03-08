@@ -3,7 +3,7 @@
 
 % Time-domain features
 % Mean amplitude
-function fval1 = features(window_data)
+function fval1 = features_realtime(window_data)
 feature1 = mean(window_data(:, jj));
 
 % Standard deviation of amplitude
