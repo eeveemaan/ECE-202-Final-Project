@@ -39,7 +39,7 @@ for ii=1:scount
 end
 
 %% Compute Correlation
-events=[-1*ones(lcount,1); 1*ones(rcount,1); 0*ones(scount,1)];
+events=[1*ones(lcount,1); 1*ones(rcount,1); 0*ones(scount,1)];
 features=[SigPower_l; SigPower_r; SigPower_s];
 
 A = [events features];

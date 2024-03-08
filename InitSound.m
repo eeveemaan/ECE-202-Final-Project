@@ -63,4 +63,4 @@ y_A = audioplayer(y_anti,Fsound);
 clear("delta","dt","T","ILD","ITD","pad","t","So","Spi");
 %clear("y_bfs","y_bfw","y_w","y_homo","y_anti");
 
-audiowrite("Sounds/whitenoise_filt.wav",y_w,Fs)
+%audiowrite("Sounds/whitenoise_filt.wav",y_w,Fs)

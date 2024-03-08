@@ -37,12 +37,22 @@ savetime=[];
 savesound=[];
 InitSound;
 
+% Initialize variable used for playing periodic sounds
 global csound
 csound = timer;
 csound.Period = 3;
 csound.TasksToExecute = 80;
 csound.ExecutionMode = 'fixedRate';
 csound.TimerFcn = @(src, event) playSoundCallback();
+
+% Timer to ensure actions happen Tsnip seconds after the sound is played
+global action_timer
+action_timer = timer;
+action_timer.Period = 1;
+action_timer.TasksToExecute = 1;
+action_timer.ExecutionMode = 'fixedRate';
+action_timer.StartDelay = 1;
+action_timer.TimerFcn = @(src, event) UpdateAngle();
 
 %global amplifierTimestamps
 
@@ -128,7 +138,10 @@ if initialized == 0
     
     % Mark initialization as complete
     initialized = 1;   
-    lastplayedsound=0;
+    
+    ts=0; tg=-pi/2;
+    subplot(2,2,[2 4])
+    disp_arrows;
 end
 
 % Mark system as running
@@ -239,7 +252,7 @@ while get(runButtonGroup.Children(2), 'Value')
         
         % Plot each channel
         for thisPlot = 1:numAmpChannels
-            subplot(numAmpChannels+1, 2, 2*thisPlot-1);
+            subplot(numAmpChannels, 2, 2*thisPlot-1);
             if thisPlot == 1
                 % For the first channel, sort out immediate spikes to plot,
                 % delayed spikes to plot, and actually plot
@@ -339,17 +352,11 @@ while get(runButtonGroup.Children(2), 'Value')
             end
         end
 
-        % REAL TIME EEG DEMO STUFF GOES HERE
-        Trt = 1;
-        Nrt = 5000*Trt;
-        curr_block = zeros(2,Nrt);
-        if(length(savedata)>Nrt)
-            curr_block = savedata(:,end-Nrt:end);
-        end
+        
         
         % DO PROCESSING   
-        global lastplayedsound;
-        ts= pi/2*((lastplayedsound==0)+(lastplayedsound==3))+pi*(lastplayedsound==1);
+        % global lastplayedsound;
+        % ts= pi/2*((lastplayedsound==0)+(lastplayedsound==3))+pi*(lastplayedsound==1);
         tg=randi(180)*pi/180;              
 
         
@@ -370,7 +377,7 @@ while get(runButtonGroup.Children(2), 'Value')
         
         % Plot each channel
         for thisPlot = 1:numAmpChannels
-            subplot(numAmpChannels+1, 2, 2*thisPlot-1);
+            subplot(numAmpChannels, 2, 2*thisPlot-1);
             % For every 10 chunks, plot with hold 'off' to clear the
             % previous plot. In all other cases, plot with hold 'on' to add
             % each 10 data-block chunk to the previous chunks
@@ -390,23 +397,23 @@ while get(runButtonGroup.Children(2), 'Value')
 
         end
     
-        subplot(numAmpChannels+1,2,2*numAmpChannels+1)
-            if chunkCounter ~= 1
-                hold on
-            end
-            plot(amplifierTimestamps, savesoundblock(1:length(amplifierTimestamps)), 'Color', 'blue');
-            hold off
-            latestPlottedWaveformTimestamp = amplifierTimestamps(end); 
-
-            title("Sound signal played?");
-            axis([minAxis maxAxis -0.1 3.1]);
+        % subplot(numAmpChannels,2,2*numAmpChannels+1)
+        %     if chunkCounter ~= 1
+        %         hold on
+        %     end
+        %     plot(amplifierTimestamps, savesoundblock(1:length(amplifierTimestamps)), 'Color', 'blue');
+        %     hold off
+        %     latestPlottedWaveformTimestamp = amplifierTimestamps(end); 
+        % 
+        %     title("Sound signal played?");
+        %     axis([minAxis maxAxis -0.1 3.1]);
         
         savedata=[savedata amplifierData];
         savetime=[savetime amplifierTimestamps];
         savesound=[savesound savesoundblock];
 
-        subplot(numAmpChannels+1,2,[2 4 6])
-        disp_arrows;
+        % subplot(numAmpChannels+1,2,[2 4])
+        % disp_arrows;
         
         % Reset timestamp index
         amplifierTimestampsIndex = 1;   
@@ -735,16 +742,24 @@ arrayIndex = arrayIndex + 5;
 end
 
 function playSoundCallback()
-global SoundSel;
-
-%WhatSound=PlaySoundSel(SoundSel); % Old fn, uses normal sound fn
-WhatSound=PSS_AP(SoundSel);        % Uses the new audio playback thingy
-global amplifierTimestampsIndex;
-global savesoundblock;
-savesoundblock(1,amplifierTimestampsIndex)=WhatSound;
-
-global lastplayedsound;
-lastplayedsound= WhatSound;
+    global SoundSel;
+    
+    %WhatSound=PlaySoundSel(SoundSel); % Old fn, uses normal sound fn
+    WhatSound=PSS_AP(SoundSel);        % Uses the new audio playback thingy
+    global amplifierTimestampsIndex;
+    global savesoundblock;
+    savesoundblock(1,amplifierTimestampsIndex)=WhatSound;
+    
+    % global lastplayedsound;
+    % lastplayedsound= WhatSound;
+    global ts
+    ts= pi/2*((WhatSound==0)+(WhatSound==3))+pi*(WhatSound==1);
+    tg=-pi/2;
+    subplot(2,2,[2 4])
+    disp_arrows;
+    
+    global  action_timer
+    start(action_timer);
 end
 
 function soundButtonChanged(source, event)
@@ -790,4 +805,18 @@ if strcmp(event.NewValue.Text, 'Pulsed')
 elseif strcmp(event.NewValue.Text, 'Continuous')
     % make it unable to be pressed, if possible
 end
+end
+
+function UpdateAngle()
+    % REAL TIME EEG DEMO STUFF GOES HERE
+    Trt = 1;
+    Nrt = 5000*Trt;
+    
+    global savedata
+    curr_block = savedata(:,end-Nrt:end);
+    tg=randi(180)*pi/180;
+
+    global ts
+    subplot(2,2,[2 4]);
+    disp_arrows;
 end

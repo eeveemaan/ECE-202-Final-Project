@@ -24,7 +24,7 @@ quiver(x,y,u,v,LineWidth=2);
 xlim([-15 15]);
 ylim([-0.5 15]);
 ax = gca; ax.LineWidth = 2; ax.FontName = 'Arial'; ax.FontSize = 12;
-title("Guessing game: Where is the sound coming from?",FontSize = 16)
+title("Where is the sound coming from?",FontSize = 14)
 ylabel("Front and back",FontSize=14)
 xlabel("Left and right",FontSize=14)
 

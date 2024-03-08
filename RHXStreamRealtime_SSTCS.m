@@ -40,7 +40,7 @@ InitSound;
 global csound
 csound = timer;
 csound.Period = 3;
-csound.TasksToExecute = 80;
+csound.TasksToExecute = 100;
 csound.ExecutionMode = 'fixedRate';
 csound.TimerFcn = @(src, event) playSoundCallback();
 
