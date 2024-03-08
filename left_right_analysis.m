@@ -1,7 +1,8 @@
-data = 'PlainWhite_open.mat';
+data = 'crop_HomoAnti_closed.mat';
+
 load(data)
-Fs= 10000;
-epochs = directionEEG(savedata,savesound,0,1,Fs);
+Fs= 5000;
+epochs = directionEEG(savedata,savesound(1:size(savedata,2)),0,1,Fs);
 
 [avgL, avgR, avgS] = plotAverageEpochs(epochs,0,Fs);
 
@@ -10,9 +11,12 @@ plotFrequencySpectrum(avgL, avgR, avgS, Fs);
 function [avgLeft, avgRight, avgSilence] = plotAverageEpochs(epochs, timeBefore, samplingRate)
     % Calculate the time axis for plotting
     nSamplesBefore = round(timeBefore * samplingRate);
-    nSamplesTotal = size(epochs.left, 2); % Assuming all have the same size
-    timeAxis = linspace(-timeBefore, (nSamplesTotal - nSamplesBefore - 1)/samplingRate, nSamplesTotal);
-    
+    nSamplesL = size(epochs.left, 2); % Assuming all have the same size
+    timeAxisL = linspace(-timeBefore, (nSamplesL - nSamplesBefore - 1)/samplingRate, nSamplesL);
+    nSamplesR = size(epochs.right, 2); % Assuming all have the same size
+    timeAxisR = linspace(-timeBefore, (nSamplesR - nSamplesBefore - 1)/samplingRate, nSamplesR);
+    nSamplesS = size(epochs.silence, 2); % Assuming all have the same size
+    timeAxisS = linspace(-timeBefore, (nSamplesS - nSamplesBefore - 1)/samplingRate, nSamplesS);
     % Calculate averages
     avgLeft = mean(epochs.left, 3);
     avgRight = mean(epochs.right, 3);
@@ -20,9 +24,9 @@ function [avgLeft, avgRight, avgSilence] = plotAverageEpochs(epochs, timeBefore,
     
     % Plotting
     figure; hold on; % Opens a new figure and holds it for multiple plots
-    plot(timeAxis, mean(avgLeft, 1), 'LineWidth', 2, 'DisplayName', 'Left');
-    plot(timeAxis, mean(avgRight, 1), 'LineWidth', 2, 'DisplayName', 'Right');
-    plot(timeAxis, mean(avgSilence, 1), 'LineWidth', 2, 'DisplayName', 'Silence');
+    plot(timeAxisL, mean(avgLeft, 1), 'LineWidth', 2, 'DisplayName', 'Left');
+    plot(timeAxisR, mean(avgRight, 1), 'LineWidth', 2, 'DisplayName', 'Right');
+    plot(timeAxisS, mean(avgSilence, 1), 'LineWidth', 2, 'DisplayName', 'Silence');
     
     legend('show'); % Show legend
     xlabel('Time (s)');
@@ -112,5 +116,25 @@ function plotFrequencySpectrum(avgLeft, avgRight, avgSilence, samplingRate)
     xlim([0, 30]);
     
     sgtitle('Frequency Spectrum of EEG Averages'); % Super title for all subplots
+        % Total power in specific frequency bands (e.g., delta, theta, alpha, beta)
+    delta_band = [1, 4]; % Define delta band (1-4 Hz)
+    theta_band = [4, 8]; % Define theta band (4-8 Hz)
+    alpha_band = [8, 12]; % Define alpha band (8-12 Hz)
+    beta_band = [12, 30]; % Define beta band (12-30 Hz)
+    
+    delta_powerL = bandpower(avgLeft',5000,delta_band)
+    theta_powerL = bandpower(avgLeft',5000, theta_band)
+    alpha_powerL = bandpower(avgLeft',5000, alpha_band)
+    beta_powerL = bandpower(avgLeft',5000,beta_band)
+
+    delta_powerR = bandpower(avgRight',5000,delta_band)
+    theta_powerR = bandpower(avgRight',5000, theta_band)
+    alpha_powerR = bandpower(avgRight',5000, alpha_band)
+    beta_powerR = bandpower(avgRight',5000,beta_band)
+
+    figure;
+    plot(alpha_powerR)
+    hold on 
+    plot(alpha_powerL)
 end
 
