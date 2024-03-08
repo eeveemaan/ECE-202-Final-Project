@@ -1,0 +1,48 @@
+% Call the filter_definitions_JS function to get filter coefficients
+[b_highpass, a_highpass, b_lowpass, a_lowpass] = filter_definitions_JS(Fs);
+
+% Apply high-pass filter at 200 Hz
+y_highpass = filter(b_highpass, a_highpass, y);
+
+% Apply low-pass filter at 7000 Hz
+y_lowpass = filter(b_lowpass, a_lowpass, y);
+
+% Combine high-passed and low-passed signals
+y_combined = y_highpass + y_lowpass;
+
+% Apply multiband dynamic processing
+threshold = -24; % Threshold for gain reduction
+attack = 0.1; % Attack time in seconds
+release = 0.1; % Release time in seconds
+
+% Calculate envelope for low frequencies (starting at 300 Hz)
+fc_low = 300;
+[b_envelope, a_envelope] = butter(4, fc_low / (Fs / 2), 'low');
+envelope_low = filter(b_envelope, a_envelope, abs(y_lowpass(:,1)));
+
+% Normalize envelope to peak value
+envelope_low = envelope_low / max(envelope_low);
+
+% Calculate gain modulation factor
+gain_low = ones(size(envelope_low));
+for i = 1:length(envelope_low)
+    if envelope_low(i) > threshold
+        gain_low(i) = 10^((threshold - envelope_low(i)) / 20);
+    end
+end
+
+% Apply gain modulation to low-frequency band
+y_lowpass(:,1) = y_lowpass(:,1) .* gain_low;
+
+% Apply multiband dynamic processing to high frequencies (above 300 Hz)
+envelope_high = envelope_low; % Just for example, can use a different envelope for high frequencies
+gain_high = ones(size(envelope_high)); % Just for example, can implement separate gain modulation for high frequencies
+
+% Apply gain modulation to high-frequency band
+y_highpass(:,1) = y_highpass(:,1) .* gain_high;
+
+% Combine processed high-passed and low-passed signals
+y_processed = y_highpass + y_lowpass;
+
+% Write whitenoise sound to file
+audiowrite('Sounds/whitenoise_filt.wav', y_processed, Fs);
