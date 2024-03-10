@@ -54,10 +54,20 @@ else
 end
 
 if(ii==1)
-    disp("left/homo");  soundTypeDir = "Left (Homophasic)";
+    disp("left/homo");  
+    if(sel==4)
+        soundTypeDir = "Homophasic";
+    else
+        soundTypeDir = "Left";
+    end
     %WhatSound=-1;  % Old
 else
-    disp("right/anti"); soundTypeDir = "Right (Antiphasic)";
+    disp("right/anti");
+    if(sel==4)
+        soundTypeDir = "Antiphasic";
+    else
+        soundTypeDir = "Right";
+    end    
     %WhatSound=+1;  % Old
 end
 WhatSound=ii; % NEW
