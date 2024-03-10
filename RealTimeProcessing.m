@@ -36,7 +36,8 @@ global soundTypeDir
 savedata=[];
 savetime=[];
 savesound=[];
-InitSound;
+%InitSound;
+FinMLOnline_InitSound;
 
 % Initialize variable used for playing periodic sounds
 global csound

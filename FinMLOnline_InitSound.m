@@ -104,15 +104,15 @@ for i = 1:numel(signals)
     signals{i} = signals{i} * norm_factor;
 end
 
-% Export signals as WAV files
-folder = 'Sounds/';
-if ~exist(folder, 'dir')
-    mkdir(folder);
-end
-
-file_names = {'1y_bfs.wav', '1y_bfw.wav', '1y_w.wav', '1y_homo.wav', '1y_anti.wav'};
-for i = 1:numel(signals)
-    file_path = fullfile(folder, file_names{i});
-    audiowrite(file_path, signals{i}, Fsound);
-    disp([file_names{i} ' exported to: ' file_path]);
-end
+% % Export signals as WAV files
+% folder = 'Sounds/';
+% if ~exist(folder, 'dir')
+%     mkdir(folder);
+% end
+% 
+% file_names = {'1y_bfs.wav', '1y_bfw.wav', '1y_w.wav', '1y_homo.wav', '1y_anti.wav'};
+% for i = 1:numel(signals)
+%     file_path = fullfile(folder, file_names{i});
+%     audiowrite(file_path, signals{i}, Fsound);
+%     disp([file_names{i} ' exported to: ' file_path]);
+% end
