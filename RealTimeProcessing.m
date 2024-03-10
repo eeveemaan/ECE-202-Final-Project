@@ -31,6 +31,7 @@ global savetime
 global savesound;
 global savesoundblock;
 global SoundSel;
+global soundTypeDir
 
 savedata=[];
 savetime=[];
@@ -589,6 +590,7 @@ global ampDataFigure
 global initialized
 global currentPlotBand
 global SoundSel
+global soundTypeDir
 % Add the UI components
 hs = addUIComponents();
 % Make figure visible after adding components
@@ -597,7 +599,8 @@ hs.fig.Visible = 'on';
 ampDataFigure = 0;
 initialized = 0;
 currentPlotBand = 'Wide';
-SoundSel = 1;
+SoundSel = 3;
+soundTypeDir = "Silence";
 end
 
 % Populate the UI with the components it needs
@@ -624,43 +627,43 @@ hs.stopButton = uitogglebutton(hs.runButtonGroup,...
     'Value', 1);
 set(hs.runButtonGroup, 'SelectionChangedFcn', @runButtonChanged);
 
-hs.bandButtonGroup = uibuttongroup(hs.mainUI,...
-    'Position', [150, 72, 80, 82]);
-hs.wideButton = uiradiobutton(hs.bandButtonGroup,...
-    'Text', 'Wide',...
-    'Position', [10, 55, 100, 22],...
-    'Value', 1);
-hs.lowButton = uiradiobutton(hs.bandButtonGroup,...
-    'Text', 'Low',...
-    'Position', [10, 30, 100, 22],...
-    'Value', 0);
-hs.highButton = uiradiobutton(hs.bandButtonGroup,...
-    'Text', 'High',...
-    'Position', [10, 5, 100, 22],...
-    'Value', 0);
-set(hs.bandButtonGroup, 'SelectionChangedFcn', @bandButtonChanged);
+% hs.bandButtonGroup = uibuttongroup(hs.mainUI,...
+%     'Position', [150, 114, 80, 40]); % [150, 72, 80, 82]);
+% hs.wideButton = uiradiobutton(hs.bandButtonGroup,...
+%     'Text', 'Wide',...
+%     'Position', [10, 5, 100, 22],... %[10, 55, 100, 22],...
+%     'Value', 1);
+% hs.lowButton = uiradiobutton(hs.bandButtonGroup,...
+%     'Text', 'Low',...
+%     'Position', [10, 30, 100, 22],...
+%     'Value', 0);
+% hs.highButton = uiradiobutton(hs.bandButtonGroup,...
+%     'Text', 'High',...
+%     'Position', [10, 5, 100, 22],...
+%     'Value', 0);
+% set(hs.bandButtonGroup, 'SelectionChangedFcn', @bandButtonChanged);
 
 % Add "Play Sound" button
 hs.playSoundButton = uibutton(hs.mainUI,...
     'Text', 'Play Sound',...
-    'Position', [10, 4, 100, 22],...
+    'Position', [350, 102, 100, 22],... % [10, 4, 100, 22],...
     'ButtonPushedFcn', @(btn,event) playSoundCallback());
 
 % Add Sound Options
 hs.soundPickGroup = uibuttongroup(hs.mainUI,...
-    'Position', [250, 52, 190, 102]);
-hs.blackmanSineButton = uiradiobutton(hs.soundPickGroup,...
-    'Text', 'Blackman Filtered Sine',...
-    'Position', [10, 77, 200, 22],...
-    'Value', 1);
-hs.blackmanGaussButton = uiradiobutton(hs.soundPickGroup,...
-    'Text', 'Blackman Filtered Gaussian',...
-    'Position', [10, 52, 200, 22],...
-    'Value', 0);
+    'Position', [150, 102, 190, 52]);% [250, 102, 190, 52]);
+% hs.blackmanSineButton = uiradiobutton(hs.soundPickGroup,...
+%     'Text', 'Blackman Filtered Sine',...
+%     'Position', [10, 77, 200, 22],...
+%     'Value', 1);
+% hs.blackmanGaussButton = uiradiobutton(hs.soundPickGroup,...
+%     'Text', 'Blackman Filtered Gaussian',...
+%     'Position', [10, 52, 200, 22],...
+%     'Value', 0);
 hs.plainGaussButton = uiradiobutton(hs.soundPickGroup,...
     'Text', 'Plain Gaussian',...
     'Position', [10, 27, 200, 22],...
-    'Value', 0);
+    'Value', 1);
 hs.haPhasicButton = uiradiobutton(hs.soundPickGroup,...
     'Text', 'Homophasic-Antiphasic',...
     'Position', [10, 2, 200, 22],...
@@ -682,8 +685,20 @@ set(hs.soundPickGroup, 'SelectionChangedFcn', @soundButtonChanged);
 % Add "Loop Sound" button
 hs.LoopSoundButton = uibutton(hs.mainUI,...
     'Text', 'Loop sound',...
-    'Position', [200, 4, 250, 22],...
+    'Position', [170, 74, 250, 22],... % [200, 4, 250, 22],...
     'ButtonPushedFcn', @(btn,event) LoopSoundCallback());
+
+% Add "Calibrate" button
+hs.CalibrateButton = uibutton(hs.mainUI,...
+    'Text', 'Calibrate',...
+    'Position', [350, 131, 100, 22],...
+    'ButtonPushedFcn', @(btn,event) CalibrateAudio());
+
+% Add text indicating sound & direction
+hs.soundPlaying = uilabel(hs.mainUI,...
+    'Text', 'Playing: ',...
+    'Position', [150, 45, 250, 25],...
+    'FontSize', 20);
 end
 
 
@@ -743,9 +758,11 @@ end
 
 function playSoundCallback()
     global SoundSel;
+    global soundTypeDir;
     
     %WhatSound=PlaySoundSel(SoundSel); % Old fn, uses normal sound fn
     WhatSound=PSS_AP(SoundSel);        % Uses the new audio playback thingy
+    updateUISoundPlaying(['Playing: ' num2str(soundTypeDir)]);
     global amplifierTimestampsIndex;
     global savesoundblock;
     savesoundblock(1,amplifierTimestampsIndex)=WhatSound;
@@ -783,29 +800,29 @@ function LoopSoundCallback()
     start(csound);
 end
 
-function playContSound(source, event)
-if strcmp(event.NewValue.Text, 'Continuous')
-    % % may have to modify "run" to play sound, but try without for now
-    % run(source);
-    % [insert timed sound function here]
-    % % in theory, should be able to call "stop" with no changes
-    % stop;
-elseif strcmp(event.NewValue.Text, 'Pulsed')
-    % make it unable to be pressed, if possible
-end
-end
-
-function playPulseSound(source, event)
-if strcmp(event.NewValue.Text, 'Pulsed')
-    % % may have to modify "run" to play sound, but try without for now
-    % run(source);
-    % % [insert timed sound function here]
-    % % in theory, should be able to call "stop" with no changes
-    % stop;
-elseif strcmp(event.NewValue.Text, 'Continuous')
-    % make it unable to be pressed, if possible
-end
-end
+% function playContSound(source, event)
+% if strcmp(event.NewValue.Text, 'Continuous')
+%     % % may have to modify "run" to play sound, but try without for now
+%     % run(source);
+%     % [insert timed sound function here]
+%     % % in theory, should be able to call "stop" with no changes
+%     % stop;
+% elseif strcmp(event.NewValue.Text, 'Pulsed')
+%     % make it unable to be pressed, if possible
+% end
+% end
+% 
+% function playPulseSound(source, event)
+% if strcmp(event.NewValue.Text, 'Pulsed')
+%     % % may have to modify "run" to play sound, but try without for now
+%     % run(source);
+%     % % [insert timed sound function here]
+%     % % in theory, should be able to call "stop" with no changes
+%     % stop;
+% elseif strcmp(event.NewValue.Text, 'Continuous')
+%     % make it unable to be pressed, if possible
+% end
+% end
 
 function UpdateAngle()
     % REAL TIME EEG DEMO STUFF GOES HERE
@@ -819,4 +836,15 @@ function UpdateAngle()
     global ts
     subplot(2,2,[2 4]);
     disp_arrows;
+end
+
+% Update soundPlaying with last played sound
+function updateUISoundPlaying(newSound)
+global hs
+set(hs.soundPlaying, 'Text', newSound);
+drawnow;
+end
+
+function CalibrateAudio()
+% Get baseline for current user
 end

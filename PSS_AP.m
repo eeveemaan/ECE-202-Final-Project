@@ -10,6 +10,7 @@ global y_w_L
 global y_w_R
 global y_H
 global y_A
+global soundTypeDir
 
 Fs = 44100;
 
@@ -20,7 +21,7 @@ Fs = 44100;
 ii = randi(3);
 
 if(ii==3)
-    disp("Silence");
+    disp("Silence"); soundTypeDir = "Silence";
     WhatSound=3;
     return;
 end
@@ -53,10 +54,10 @@ else
 end
 
 if(ii==1)
-    disp("left/homo");
+    disp("left/homo");  soundTypeDir = "Left (Homophasic)";
     %WhatSound=-1;  % Old
 else
-    disp("right/anti");
+    disp("right/anti"); soundTypeDir = "Right (Antiphasic)";
     %WhatSound=+1;  % Old
 end
 WhatSound=ii; % NEW
