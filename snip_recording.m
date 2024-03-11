@@ -37,7 +37,9 @@ lcount=sum(savesound==1); rcount=sum(savesound==2); scount=sum(savesound==3);
 % Tsnip = 0.1; N = Fs*Tsnip;
 % t = 0:1/Fs:Tsnip;
 
-snippets_d = zeros(length(idx_sound),N+1,2);
+
+snippets_labels = zeros(L,1);
+snippets_d = zeros(L,N+1,2); 
 snippets_l = zeros(lcount,N+1,2); lcounter=1;
 snippets_r = zeros(rcount,N+1,2); rcounter=1;
 snippets_s = zeros(scount,N+1,2); scounter=1;
@@ -46,7 +48,7 @@ snippets_s = zeros(scount,N+1,2); scounter=1;
 for ii=1:L
     for jj=1:2
         snippets_d(ii,:,jj)=data_filt(jj,idx_sound(ii)-round(N*(1-after),0):idx_sound(ii)+round(N*after,0));
-
+        snippets_labels(ii)=savesound(idx_sound(ii));
         %snippets_d(ii,:,jj)=data_filt(jj,idx_sound(ii)-N/2:idx_sound(ii)+N/2);
         %snippets_d(ii,:)=data_ds(1,idx_sound(ii)-N/2:idx_sound(ii)+N/2);
         % subplot(L,1,ii)
