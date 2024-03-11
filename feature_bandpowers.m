@@ -1,10 +1,10 @@
 %% Load file and snip recording
-Tsnip = 0.05;          %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
+Tsnip = 1;          %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
 after = 1;
 snip_recording;
 %MAKE SURE TO SET SNIPPET LENGTH CORRECTLY!
 
-close all; 
+%close all; 
 delta_band = [1, 4]; % Define delta band (1-4 Hz)
 theta_band = [4, 8]; % Define theta band (4-8 Hz)
 alpha_band = [8, 12]; % Define alpha band (8-12 Hz)
@@ -67,14 +67,16 @@ end
 events=[1*ones(lcount,1); 1*ones(rcount,1); 0*ones(scount,1)];
 
 % alpha
-features=[alpha_power_l; alpha_power_r; alpha_power_s];
+%features=[alpha_power_l; alpha_power_r; alpha_power_s];
 
-levels = [mean(alpha_power_l); mean(alpha_power_s); mean(alpha_power_r)];
-disp(levels);
+% levels = [mean(alpha_power_l); mean(alpha_power_s); mean(alpha_power_r)];
+% disp(levels);
 
 % %beta
-% features=[beta_power_l; beta_power_r; beta_power_s];
-% 
+features=[beta_power_l; beta_power_r; beta_power_s];
+levels = [mean(beta_power_l); mean(beta_power_s); mean(beta_power_r)];
+disp(levels);
+
 % %delta
 % features=[delta_power_l; delta_power_r; delta_power_s];
 % 

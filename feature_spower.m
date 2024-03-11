@@ -34,7 +34,7 @@ for ii=1:scount
     % Extract feature here
     for jj=1:2
         % One channel at a time
-        SigPower_s(ii,jj)=sum(snippets_s(ii,:,jj).^2);
+        SigPower_s(ii,jj)=sum(snippets_s(ii,:,jj).^2)/Tsnip;
     end
 end
 
