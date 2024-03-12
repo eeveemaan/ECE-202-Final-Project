@@ -1,3 +1,4 @@
+%% Loads the following files, merges them and trains a model
 files = {'HomoAnti_closed.mat', 'HomoAnti_closed2.mat', 'PlainWhite_closed2.mat', 'HomoAnti_open.mat', 'PlainWhite_open.mat' }; % Add your file names
 Fs = 5000; % Sampling frequency
 
@@ -10,7 +11,7 @@ for i = 1:length(files)
     allLabels = [allLabels; labels];
 end
 
-% Proceed with data splitting, model training, and testing as before
+%% Splits the data into training and test sets
 cv = cvpartition(length(allLabels), 'HoldOut', 0.2);
 idxTrain = training(cv);
 idxTest = test(cv);
@@ -20,18 +21,19 @@ yTrain = allLabels(idxTrain);
 XTest = allFeatures(idxTest, :);
 yTest = allLabels(idxTest);
 
-% Fit logistic regression model
+%% Fit logistic regression model
 Ball = mnrfit(XTrain, yTrain + 1); % MATLAB indexing
 
-% Test the model and calculate accuracy
-prob = mnrval(Ball, XTest);
-[~, predictions] = max(prob, [], 2);
+%% Test the model and calculate accuracy
+prob = mnrval(Ball, XTest);          % Compute the probabilities given test set features
+[~, predictions] = max(prob, [], 2); % 
 predictions = predictions - 1;
 
 accuracy = sum(predictions == yTest) / length(yTest);
 fprintf('Model accuracy: %.2f%%\n', accuracy * 100);
 
 
+%% Function definitions:
 function [features, labels] = processEEGFile(fileName, Fs)
     
     data = load(fileName);
