@@ -1,5 +1,7 @@
 %% Loads the following files, merges them and trains a model
-files = {'HomoAnti_closed.mat', 'HomoAnti_closed2.mat', 'PlainWhite_closed2.mat', 'HomoAnti_open.mat', 'PlainWhite_open.mat' }; % Add your file names
+files = string(ls);
+files = files(3:end);
+%files = files.name
 Fs = 5000; % Sampling frequency
 
 allFeatures = [];
@@ -22,7 +24,7 @@ XTest = allFeatures(idxTest, :);
 yTest = allLabels(idxTest);
 
 %% Fit logistic regression model
-Ball = mnrfit(XTrain, yTrain + 1); % MATLAB indexing
+[Ball,dev,stat] = mnrfit(XTrain, yTrain + 1); % MATLAB indexing
 
 %% Test the model and calculate accuracy
 prob = mnrval(Ball, XTest);          % Compute the probabilities given test set features
@@ -74,17 +76,23 @@ function [features, labels] = processEEGFile(fileName, Fs)
     
     % Loop over the savesound array to mark the start of each event
     for i = 1:length(savesound)
-        if savesound(i) == 1 || savesound(i) == 2
+        if savesound(i) == 1 
             % Find the corresponding second for the event start
             secondIdx = floor((i-1) / Fs) + 1;
             if secondIdx <= numSeconds
-                eventLabels(secondIdx) = 1; % Mark event 1 or 2 as '1'
+                eventLabels(secondIdx) = 1; % Mark event 1 as '1'
             end
         elseif savesound(i) == 3
             % Find the corresponding second for the event start
             secondIdx = floor((i-1) / Fs) + 1;
             if secondIdx <= numSeconds
                 eventLabels(secondIdx) = 0; % Mark event 3 as '0'
+            end
+         elseif savesound(i) == 2
+            % Find the corresponding second for the event start
+            secondIdx = floor((i-1) / Fs) + 1;
+            if secondIdx <= numSeconds
+                eventLabels(secondIdx) = 2; % Mark event 2 as '2'
             end
         end
 
