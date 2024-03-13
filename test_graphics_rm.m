@@ -1,6 +1,6 @@
 clear
-dt=0.1;
-x = 0:dt:500;
+dt=0.05;
+x = 0:dt:2*pi;
 y = 3;
 % plot(x, y); hold on
 
@@ -19,10 +19,11 @@ hi.AlphaData = alpha; % set alpha
 
 % enforce axes extents
 axis equal
-x = 0:dt:500;
+x = 0:dt:2*pi;
 y = sin(x);
 plot(x, y); hold on
 
+x2 = flip(x);
 %i want my image to move in this way
 fname = 'brain.png';   
 [inpict,~,alpha] = imread(fname); 
@@ -49,8 +50,8 @@ for k= 1:numel(x)
 end
 
 for k= 1:numel(x)
-    hi.XData = xlim - [-0.5 0.5]*imgsize(1) + x(k);
-    hi.YData = ylim - [-0.5 0.5]*imgsize(1) + x(k);
+    hi.XData = [-0.5 0.5]*imgsize(1) + x2(k);
+    hi.YData = [-0.5 0.5]*imgsize(2) + y(k);
     % wait
     pause(dt)	
 end
