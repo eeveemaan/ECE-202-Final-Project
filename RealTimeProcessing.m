@@ -36,8 +36,11 @@ global soundTypeDir
 savedata=[];
 savetime=[];
 savesound=[];
-%InitSound;
-FinMLOnline_InitSound;
+InitSound;
+%FinMLOnline_InitSound;
+
+global Ball;
+load('predict/TrainedModel1.mat');
 
 % Initialize variable used for playing periodic sounds
 global csound
@@ -832,6 +835,15 @@ function UpdateAngle()
     
     global savedata
     curr_block = savedata(:,end-Nrt:end);
+    
+    alphaBand = [8 12]; 
+    betaBand = [13 20];
+
+    alphaPower = [bandpower(currblock(1,:), Fs, alphaBand); bandpower(currblock(2,:), Fs, alphaBand)];
+    betaPower  = [bandpower(currblock(1,:), Fs, betaBand); bandpower(currblock(2,:), Fs, betaBand)];
+   
+    global Ball    
+    prob = mnrval(Ball, [alphaPower, betaPower]);
     tg=randi(180)*pi/180;
 
     global ts
@@ -841,11 +853,15 @@ end
 
 % Update soundPlaying with last played sound
 function updateUISoundPlaying(newSound)
-global hs
-set(hs.soundPlaying, 'Text', newSound);
-drawnow;
+    global hs
+    set(hs.soundPlaying, 'Text', newSound);
+    drawnow;
 end
 
 function CalibrateAudio()
 % Get baseline for current user
+    global Ball
+
+    % INSERT TRAINING CODE
+    % OUTCOME: IT SHOULD SET / OVERWRITE BALL
 end
