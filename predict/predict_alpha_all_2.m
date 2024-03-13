@@ -98,9 +98,6 @@ function [features, labels] = processEEGFile(fileName, Fs)
 
     end
 
-
-
-
     
     % Calculate average alpha power or use both channels
     %averageAlphaPower = mean(alphaPower, 2); % average alpha power

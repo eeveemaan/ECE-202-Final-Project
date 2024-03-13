@@ -115,6 +115,8 @@ snippets_f = zeros(dcount,N+1,2);
 snippets_fl = zeros(lcount,N+1,2);
 snippets_fr = zeros(rcount,N+1,2);
 snippets_fs = zeros(scount,N+1,2);
+
+lcounter=1; rcounter=1; scounter=1;
 % figure;
 f = 0:Fs/N:Fs;
 for ii=1:dcount
