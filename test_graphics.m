@@ -61,9 +61,8 @@ scene_pswiper = scene_bg;
 refpts_pswiper = [(LyI - Lx_ps), (LyI-1); 1, Ly_ps];
 scene_pswiper(refpts_pswiper(1,1):refpts_pswiper(1,2), refpts_pswiper(2,1):refpts_pswiper(2,2), :) = pswiper;
 
-%% Test Function: displaying everything in order
-Ifull = scene_bg;
-imshow(Ifull);
+%% Test Function: run basic images w/ 1 sec delay
+Ifull = scene_bg;   imshow(Ifull);  % sets up black background and displays
 
 % WITHIN 3 SECS
 % if sound played, add swiper
@@ -93,9 +92,9 @@ t_pswiper.TimerFcn = @(src, event) dispScene(scene_pswiper);
 % reset
 t_pswiper.StopFcn = @(src, event) dispScene(scene_pswiper);
 
-start(t_default);
-
-
+% %% Set off the timer chain
+% start(t_default);
+% 
 % %% Timers, Functions, n Stuff
 % ustom_timer = timer;
 % ustom_timer.StartDelay=0.3;
