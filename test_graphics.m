@@ -92,10 +92,10 @@ t_pswiper.TimerFcn = @(src, event) dispScene(scene_pswiper);
 % reset
 t_pswiper.StopFcn = @(src, event) dispScene(scene_pswiper);
 
-% %% Set off the timer chain
-% start(t_default);
-% 
-% %% Timers, Functions, n Stuff
+%% Set off the timer chain
+start(t_default);
+
+%% Timers, Functions, n Stuff
 % ustom_timer = timer;
 % ustom_timer.StartDelay=0.3;
 % ustom_timer.TimerFcn=@(src, event) updatefigure();
