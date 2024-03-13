@@ -40,7 +40,7 @@ InitSound;
 %FinMLOnline_InitSound;
 
 global Ball;
-load('predict/TrainedModel1.mat');
+load('predict/TrainedMNR_fixed.mat');
 
 % Initialize variable used for playing periodic sounds
 global csound
