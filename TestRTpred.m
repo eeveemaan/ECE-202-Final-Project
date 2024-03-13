@@ -3,7 +3,7 @@ Nrt = Fs*Trt;
 
 % global savedata
 % curr_block = savedata(:,end-Nrt:end);
-curr_block=snippets_d(randi(60),1:end-1,:);
+curr_block=[snippets_d(randi(60),1:end-1,:)];
 
 alphaBand = [8 12]; 
 betaBand = [13 20];

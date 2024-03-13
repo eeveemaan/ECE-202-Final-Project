@@ -12,9 +12,9 @@ utom = imread('unsettled_tom.jpg');
 [Lxt, Lyt, ~] = size(utom);
 
 ustom_timer = timer;
-ustom_timer.StartDelay=1;
+ustom_timer.StartDelay=0.3;
 ustom_timer.TimerFcn=@(src, event) updatefigure();
-ustom_timer.StopFcn=@(src, event) jerryanimation();
+%ustom_timer.StopFcn=@(src, event) jerryanimation();
 
 % Initialize polish jerry swiper creature thingy
 global pjerry
@@ -22,14 +22,15 @@ pjerry = imread('swiper_jerry.png');
 pjerry = pjerry(1:2:end,1:end,:);
 [Lxj, Lyj, ~] = size(pjerry);
 
+
 global pjerry_timer
 pjerry_timer = timer;
-pjerry_timer.StartDelay=1;
+pjerry_timer.StartDelay=0.3;
 pjerry_timer.TimerFcn=@(src, event) jerryanimation();
 
 global restore_timer;
 restore_timer = timer;
-restore_timer.StartDelay=1;
+restore_timer.StartDelay=0.3oooiii;
 restore_timer.TimerFcn=@(src, event) restorefigure();
 
 global side
