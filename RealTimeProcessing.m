@@ -460,9 +460,9 @@ end
 
 savefname=strcat("Private/",WhatSound,string(datetime('now',format='MM-dd_HHmmSS')),".mat");
 save(savefname,"savetime","savedata","savesound");
-savedata=[];
-savetime=[];
-savesound=[];
+%savedata=[];
+%savetime=[];
+%savesound=[];
 end
 
 % Iterate through SpikesToPlot to populate t and delayedT with spikes that
@@ -872,22 +872,27 @@ end
 function CalibrateAudio()
     % Get baseline for current user
     global Ball
+    global savedata
+    global savesound
     
     % Set snipping parameters
     Tsnip=1; after=1;
     
     % Take data measured so far, filter and save. 
     Fs = 5000; N = Fs*Tsnip; t = 0:1/Fs:Tsnip;
-    lsave = length(savedata(1,:));
+    lsave = length(savedata(1,:)); 
+    %disp(lsave);
+
     idx_filt=int32(50/Fs*lsave); % Sets the freq after which you want to set to 0. 
     data_f = [fft(savedata(1,:)); fft(savedata(2,:))]; data_f(:,idx_filt:end-idx_filt)=0;
     data_filt = real([ifft(data_f(1,:)); ifft(data_f(2,:))]);
     % data_filt = savedata(:,:);
-    
+        
     discard_sf=1000;
       
     idx_sound = find(savesound); L=length(idx_sound);                
-    snippets_labels = zeros(L,1); snippets_issound = zeros(L,1);
+    %disp(idx_sound);
+    %snippets_labels = zeros(L,1); snippets_issound = zeros(L,1);
     
     dcount=0; lcounter=1; rcounter=1; scounter=1;
     
@@ -897,7 +902,8 @@ function CalibrateAudio()
             temp(:,jj)=data_filt(jj,idx_sound(ii)-round(N*(1-after),0):idx_sound(ii)+round(N*after,0));        
         end
         
-        if(sum(sum(temp.^2))>2e7)
+        if(sum(sum(temp.^2))>5e9)
+            disp(sum(sum(temp.^2)));
             continue;
         end
         dcount=dcount+1;
@@ -915,9 +921,9 @@ function CalibrateAudio()
             snippets_s(scounter,:,:)=snippets_d(dcount,:,:);
             scounter=scounter+1;
         end
-    end
-    
+    end   
     lcount=lcounter-1; rcount=rcounter-1; scount=scounter-1;
+    disp([dcount lcount rcount scount]);
     
     seconds = size(snippets_d,1);
     alphaBand = [8 12]; 
@@ -936,11 +942,15 @@ function CalibrateAudio()
     features = [alphaPower, betaPower];
     
     % INSERT TRAINING CODE
-    [Ball_new,dev,stat] = mnrfit(features, snippets_labels);
+    disp(size(features));
+    disp(size(snippets_labels));
+    [Ball_new,dev,stat] = mnrfit(features, snippets_labels');
     
     
     % OUTCOME: IT SHOULD SET / OVERWRITE BALL
+    disp(Ball);
     Ball = Ball_new;
+    disp(Ball);
 end
 
 
