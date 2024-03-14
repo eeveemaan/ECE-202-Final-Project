@@ -78,7 +78,7 @@ global pSwiper; global pSwiperImg;
 
 global guess_timer
 guess_timer = timer;
-guess_timer.StartDelay = 0.2;
+guess_timer.StartDelay = 0.7;
 
 global swin_timer
 swin_timer = timer;
