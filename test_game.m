@@ -116,7 +116,7 @@ pSwiperImg.AlphaData = pSwiper.alpha;
 %% Game Test
 
 % if sound played, swiper appears
-swiperIn(WhatSound);    % 0.2 s
+swiperIn(WhatSound, 0.2);    % 0.2 s
 pause(30*dt);   % 0.3 secs for brain to react
 
 % brain notices and predicts
@@ -125,7 +125,7 @@ brainGuess(tg);
 % swiper leaves
 % if guess correctly, swiper turns into polish jerry and backs off
 % if guess wrong, swiper turns around before leaving
-swiperOut(LastSound, tg);   % 0.2 s
+swiperOut(LastSound, tg, 0.2);   % 0.2 s
 pause(30*dt);   % (0.3s) pause a little before returning to default
 
 % return to default
@@ -139,18 +139,19 @@ defaultScene();
 
 %% Functions
 
-function swiperIn(sound)
-% Move Swiper onscreen - takes 0.2s
+function swiperIn(sound, pauseT)
+% Move Swiper onscreen
 % Currently he only teleports in, can hopefully modify to slide in
 % sound: double of value 1 (left), 2 (right), or 3 (silence)
+% pauseT: [s] time to move swiper offscreen
 
-global swiper;  global swiperImg;   global dt;  % global variables
+global swiper;  global swiperImg;   % global variables
 
 % Swiper start position: (-1)^(sound-1) will flip image if sound=2
 swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.def(sound,1);
 swiperImg.YData = swiper.imgY + swiper.def(sound,2);
 
-pause(20*dt);   % pauses for 0.2s
+pause(pauseT);   % swiper sliding in happens here
 
 % Swiper end position
 swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.ctr(sound,1);
@@ -158,26 +159,71 @@ swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
 end
 
 
-function swiperOut(sound, guess)
-% Move Swiper offscreen - takes 0.2s
-% Currently teleports in, if changing swiperIn can easily modify this
+function swiperOut(sound, guess, pauseT)
+% Move Swiper offscreen
+% Calls functions depending on guess correctness
 % sound: double of value 1 (left), 2 (right), or 3 (silence)
+% guess: [rad] between (0,pi)
+% pauseT: [s] time to move swiper offscreen
 
-% global variables
-global swiper;  global swiperImg;   global dt;
-global pSwiper; global pSwiperImg;
+% checking which side guessed
+gVal = (guess<pi/2) + 1;  % right = 2, left = 1
+
+% compare guess with actual
+if(gVal == sound)
+    swiperLoses(sound, pauseT);
+else
+    swiperWins(sound, pauseT);  % also called when silence
+end
+
+% [ADD CODE TO REMOVE ARROWS]
+end
+
+
+function swiperWins(sound, pauseT)
+% Moves swiper offscreen - he currently teleports out
+% Swiper turns around before leaving
+% sound: double of value 1 (left), 2 (right), or 3 (silence)
+% pauseT: [s] time to move swiper offscreen
+
+global swiper;  global swiperImg;   % global variables
 
 % Swiper start position
-swiperImg.XData = swiper.imgX + swiper.ctr(sound,1);
+swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
 swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
 
-pause(20*dt);   % pauses for 0.2s
+pause(pauseT);  % swiper sliding out happens here
 
 % Swiper end position
 swiperImg.XData = swiper.imgX + swiper.def(sound,1);
 swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+end
 
-% [ADD CODE TO REMOVE ARROWS]
+
+function swiperLoses(sound, pauseT)
+% Swaps swiper out for polish jerry version
+% Moves swiper offscreen - he currently teleports out
+% sound: double of value 1 (left) or 2 (right)
+% pauseT: [s] time to move swiper offscreen
+
+% global variables
+global swiper;  global swiperImg;
+global pSwiper; global pSwiperImg;
+
+% removes normal swiper
+swiperImg.XData = swiper.imgX + swiper.def(sound,1);
+swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+
+% polish jerry that swiper - starting position
+pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.ctr(sound,1);
+pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
+
+pause(pauseT);  % swiper sliding out happens here
+
+% Polish Swiper ending position
+pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.def(sound,1);
+pSwiperImg.YData = pSwiper.imgY + pSwiper.def(sound,2);
+
 end
 
 
@@ -206,13 +252,14 @@ sBrainImg.YData = sBrain.imgY + sBrain.def(gVal,2);
 pBrainImg.XData = pBrain.imgX*(-1)^(gVal-1) + pBrain.ctr(gVal,1);
 pBrainImg.YData = pBrain.imgY + pBrain.ctr(gVal,2);
 
-% reduce tom's transparency - consider mapping it to 
+% reduce tom's transparency - consider mapping it to abs(pi/2 - tg)
 for i=1:100  % run a for loop for 1s
     uTomImg.AlphaData = uTomImg.AlphaData - 1/100;
     pause(dt);
 end
 
-% add arrows
+% add arrow
+% [ADD CODE FOR ARROW]
 end
 
 function defaultScene()
