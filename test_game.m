@@ -194,8 +194,8 @@ sBrainImg.YData = sBrain.imgY + sBrain.def(gVal,2);
 pBrainImg.XData = pBrain.imgX*(-1)^(gVal-1) + pBrain.ctr(gVal,1);
 pBrainImg.YData = pBrain.imgY + pBrain.ctr(gVal,2);
 
-for i=1:30*dt
-    uTomImg.AlphaData = uTomImg.AlphaData - 1/30;
+for i=1:100  % run a for loop for 1s
+    uTomImg.AlphaData = uTomImg.AlphaData - 1/100;
     disp(uTomImg.AlphaData)
     pause(dt);
 end
