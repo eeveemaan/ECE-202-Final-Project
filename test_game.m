@@ -43,12 +43,16 @@ global uTom;    global pSwiper;
 [swiper.pic, ~, swiper.alpha] = imread('swiper.png');
 [y,x,~] = size(swiper.pic);
 resz = 1;   % resizing image
-% set image x and y limits (based on resizing)
+
+% set image x and y limits (based on resz)
 swiper.imgX = [-resz resz]*x; swiper.imgY = [-resz resz]*y;
+
 % image onscreen center coords left (1,:), right (2,:), and silence (3,:)
 swiper.ctr = [xSwiper, LyI-500; LxI-xSwiper, LyI-500; -800, -800];
+
 % image offscreen default coords left (1,:), right (2,:), and silence (3,:)
 swiper.def = [-x, LyI-500; LxI+x, LyI-500; -800, -800];
+
 
 % Read brain images
 [pBrain.pic, ~, pBrain.alpha] = imread('brain.png');
@@ -115,7 +119,7 @@ swiperIn(WhatSound);    % 0.2 s
 pause(30*dt);   % 0.3 secs for brain to react
 
 % brain notices and predicts
-brainGuesses(tg);
+brainGuess(tg);
 
 % swiper leaves
 % if guess correctly, swiper turns into polish jerry and backs off
@@ -169,7 +173,7 @@ swiperImg.YData = swiper.imgY + swiper.def(sound,2);
 end
 
 
-function brainGuesses(guess)
+function brainGuess(guess)
 % brain makes a guess
 % guess: [rad] tg from RealtimeProcessing UpdateAngle()
 
@@ -184,7 +188,7 @@ gVal = (guess<pi/2) + 1;  % right = 2, left = 1 (for flipping image)
 % unsettled tom time
 uTomImg.XData = uTom.imgX*(-1)^(gVal-1) + uTom.ctr(gVal,1);
 uTomImg.YData = uTom.imgY + uTom.ctr(gVal,2);
-uTomImg.AlphaData = 1;
+uTomImg.AlphaData = 1;  % solidifying tom just in case
 
 % move straight brain offscreen
 sBrainImg.XData = sBrain.imgX + sBrain.def(gVal,1);
@@ -194,9 +198,9 @@ sBrainImg.YData = sBrain.imgY + sBrain.def(gVal,2);
 pBrainImg.XData = pBrain.imgX*(-1)^(gVal-1) + pBrain.ctr(gVal,1);
 pBrainImg.YData = pBrain.imgY + pBrain.ctr(gVal,2);
 
+% reduce tom's transparency - consider mapping it to 
 for i=1:100  % run a for loop for 1s
     uTomImg.AlphaData = uTomImg.AlphaData - 1/100;
-    disp(uTomImg.AlphaData)
     pause(dt);
 end
 
