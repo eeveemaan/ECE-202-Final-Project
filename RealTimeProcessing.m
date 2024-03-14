@@ -67,27 +67,27 @@ global pBrain;  global pBrainImg;   global uTom;    global uTomImg;
 global pSwiper; global pSwiperImg;
 
 % timer for game
-global tom_timer
-tom_timer = timer;
-% tom_timer.Period = 0.2;
-% tom_timer.TasksToExecute = 5;
-% tom_timer.ExecutionMode = 'fixedRate';
-% tom_timer.BusyMode = 'drop';
-tom_timer.StartDelay = 0.5;
-tom_timer.TimerFcn = @(src, event) transparenTom();
+% global tom_timer
+% tom_timer = timer;
+% % tom_timer.Period = 0.2;
+% % tom_timer.TasksToExecute = 5;
+% % tom_timer.ExecutionMode = 'fixedRate';
+% % tom_timer.BusyMode = 'drop';
+% tom_timer.StartDelay = 0.5;
+% tom_timer.TimerFcn = @(src, event) transparenTom();
 
 global guess_timer
 guess_timer = timer;
-guess_timer.StartDelay = 0.7;
+guess_timer.StartDelay = 0.2;
 
 global swin_timer
 swin_timer = timer;
-swin_timer.BusyMode = 'drop';
+% swin_timer.BusyMode = 'drop';
 % swin_timer.StartDelay = 0.5;
 
 global sloss_timer
 sloss_timer = timer;
-sloss_timer.BusyMode = 'drop';
+% sloss_timer.BusyMode = 'drop';
 % sloss_timer.StartDelay = 0.5;
 
 % When 'run' is clicked - begin realtime streaming and plotting
@@ -809,9 +809,10 @@ function playSoundCallback()
     disp_arrows;
     
     figure(gameFigure);
-    defaultScene();
+    % defaultScene();
     swiperIn(WhatSound);
-
+    global checkWS
+    checkWS = WhatSound;
     figure(ampDataFigure);
 
     global action_timer
@@ -878,9 +879,9 @@ function UpdateAngle()
 
     figure(gameFigure);
     brainGuess(tg);
-    global tom_timer; start(tom_timer);
-    global guess_timer;
-    guess_timer.TimerFcn = @(src,event) swiperOut(ts, tg);
+    % global tom_timer; start(tom_timer);
+    global guess_timer; global checkWS;
+    guess_timer.TimerFcn = @(src,event) swiperOut(checkWS, tg);
     start(guess_timer);
 
     figure(ampDataFigure);
@@ -1039,25 +1040,27 @@ global swin_timer; global sloss_timer;
 global qArrow;
 
 % checking which side guessed
-sVal = (sound<pi/2) + (sound==pi/2) + 1; % right = 2, left = 1, silence = 3
+% sVal = (sound<pi/2) + (sound==3*pi/2) + 1; % right = 2, left = 1, silence = 3
 gVal = (guess<pi/2) + 1;  % right = 2, left = 1
 
-sloss_timer.TimerFcn = @(src, event) swiperLoses(sVal);
-swin_timer.TimerFcn = @(src, event) swiperWins(sVal);
+transparenTom();    % remove tom by changing opacity to 0
+
+sloss_timer.TimerFcn = @(src, event) swiperLoses(sound);
+swin_timer.TimerFcn = @(src, event) swiperWins(sound);
 swin_timer.StopFcn = @(src, event) defaultScene();
 sloss_timer.StopFcn = @(src, event) defaultScene();
 % compare guess with actual, initialize swiper, call win/loss functions
-if(gVal == sVal)
+if(gVal == sound)
     % polish jerry that swiper
-    swiperImg.XData = swiper.imgX + swiper.def(sVal,1);
-    swiperImg.YData = swiper.imgY + swiper.def(sVal,2);
-    pSwiperImg.XData = pSwiper.imgX*(-1)^(sVal-1) + pSwiper.ctr(sVal,1);
-    pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sVal,2);
+    swiperImg.XData = swiper.imgX + swiper.def(sound,1);
+    swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+    pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.ctr(sound,1);
+    pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
     start(sloss_timer);
     % swiperLoses(sVal);
 else
-    swiperImg.XData = swiper.imgX*(-1)^(sVal) + swiper.ctr(sVal,1);
-    swiperImg.YData = swiper.imgY + swiper.ctr(sVal,2);
+    swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
+    swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
     start(swin_timer);
     % swiperWins(sVal);  % also called when silence
 end
