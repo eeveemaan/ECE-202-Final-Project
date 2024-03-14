@@ -24,9 +24,9 @@ global dt;  % [s] timestep
 dt = 0.01;
 
 % Scene window size
-LxI = 4000; % 3*Ly_swiper
-LyI = 2000; % 2*Lx_swiper
-xSwiper = 500;  % swiper distance from screen edge
+LxI = 4000;     % [px] display window width
+LyI = 2000;     % [px] display window height
+xSwiper = 500;  % [px] swiper distance from window edge
 
 %% Temporary variable assignment testing
 WhatSound = 2;
@@ -125,9 +125,16 @@ brainGuess(tg);
 % if guess correctly, swiper turns into polish jerry and backs off
 % if guess wrong, swiper turns around before leaving
 swiperOut(LastSound, tg);   % 0.2 s
+pause(30*dt);   % (0.3s) pause a little before returning to default
 
 % return to default
 defaultScene();
+
+%% Quick Note
+% 'XData' and 'YData' are the image x and y limits
+% to change the position of the image, do:
+% imgObj.XData = imgStruct.imgX + (desired img position center x coord)
+% and same for YData
 
 %% Functions
 
