@@ -108,13 +108,6 @@ uTomImg = image(uTom.imgX - 800, uTom.imgY - 800, uTom.pic);
 pSwiperImg = image(pSwiper.imgX - 800, pSwiper.imgY - 800, pSwiper.pic);%.*(pSwiper.alpha/255));
 pSwiperImg.AlphaData = pSwiper.alpha;
 
-% storing some code lines for later
-% sBrainImg = image(sBrain.imgX + sBrain.ctr(1,1), sBrain.imgY + sBrain.ctr(1,2), sBrain.pic.*(sBrain.alpha/255));
-% pBrainImg = image(pBrain.imgX + pBrain.ctr(1,1), pBrain.imgY + pBrain.ctr(1,2), pBrain.pic.*(pBrain.alpha/255));
-% swiperImg = image(swiper.imgX + swiper.ctr(1,1), swiper.imgY + swiper.ctr(1,2), swiper.pic.*(swiper.alpha/255));
-% uTomImg = image(uTom.imgX + uTom.ctr(1,1), uTom.imgY + uTom.ctr(1,2), uTom.pic);
-% pSwiperImg = image(pSwiper.imgX + pSwiper.ctr(1,1), pSwiper.imgY + pSwiper.ctr(1,2), pSwiper.pic.*(pSwiper.alpha/255));
-
 %% Game Test
 
 % if sound played, swiper appears
