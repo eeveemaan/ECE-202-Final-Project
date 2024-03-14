@@ -1,9 +1,9 @@
 clear; close all;
 % NOTE: need to modify to initialize all images once only (var/func/script)
-% also a lot of the code is repeated/can probably be dumped into func if
-% time permits
+% also a lot of the code is repeated/can probably be dumped into func if time permits
 
-% this script relies on WhatSound and tg from RealTimeProcessing
+% this script is designed to rely on WhatSound and tg from RealTimeProcessing
+% currently they aren't used and values are hardcoded in line 31 below
 
 %% Initialize variables
 
