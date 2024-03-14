@@ -17,7 +17,7 @@ global tg;  % from RealTimeProcessing - UpdateAngle()
 
 
 global LastSound;   % sound previously played
-global side;    % guess for which side brain turns
+
 
 % NOTE: ADD EXCLAMATION PT in same manner as disp arrow (at angle)
 % NOTE: ^arrow for guess & use transparency of tom to imply confidence
@@ -34,7 +34,7 @@ xSwiper = 500;  % [px] swiper distance from window edge
 %% Temporary variable assignment testing
 WhatSound = 2;
 LastSound = WhatSound;
-tg = pi/4;
+tg = 3*pi/4;
 
 %% Loading in Images
 
@@ -119,17 +119,18 @@ pSwiperImg.AlphaData = pSwiper.alpha;
 %% Game Test
 
 % if sound played, swiper appears
-swiperIn(WhatSound, 0.2);    % 0.2 s
-pause(30*dt);   % 0.3 secs for brain to react
+swiperIn(WhatSound);
+pause(0.5);
 
 % brain notices and predicts
 brainGuess(tg);
+pause(1);
 
 % swiper leaves
 % if guess correctly, swiper turns into polish jerry and backs off
 % if guess wrong, swiper turns around before leaving
-swiperOut(LastSound, tg, 0.2);   % 0.2 s
-pause(30*dt);   % (0.3s) pause a little before returning to default
+swiperOut(WhatSound, tg)
+pause(0.5);
 
 % return to default
 defaultScene();
@@ -142,7 +143,7 @@ defaultScene();
 
 %% Functions
 
-function swiperIn(sound, pauseT)
+function swiperIn(sound)
 % Move Swiper onscreen
 % Currently he only teleports in, can hopefully modify to slide in
 % sound: double of value 1 (left), 2 (right), or 3 (silence)
@@ -154,79 +155,11 @@ global swiper;  global swiperImg;   % global variables
 swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.def(sound,1);
 swiperImg.YData = swiper.imgY + swiper.def(sound,2);
 
-pause(pauseT);   % swiper sliding in happens here
+% swiper sliding in happens here
 
 % Swiper end position
 swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.ctr(sound,1);
 swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
-end
-
-
-function swiperOut(sound, guess, pauseT)
-% Move Swiper offscreen
-% Calls functions depending on guess correctness
-% sound: double of value 1 (left), 2 (right), or 3 (silence)
-% guess: [rad] between (0,pi)
-% pauseT: [s] time to move swiper offscreen
-
-% checking which side guessed
-gVal = (guess<pi/2) + 1;  % right = 2, left = 1
-
-% compare guess with actual
-if(gVal == sound)
-    swiperLoses(sound, pauseT);
-else
-    swiperWins(sound, pauseT);  % also called when silence
-end
-
-% [ADD CODE TO REMOVE ARROWS]
-end
-
-
-function swiperWins(sound, pauseT)
-% Moves swiper offscreen - he currently teleports out
-% Swiper turns around before leaving
-% sound: double of value 1 (left), 2 (right), or 3 (silence)
-% pauseT: [s] time to move swiper offscreen
-
-global swiper;  global swiperImg;   % global variables
-
-% Swiper start position
-swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
-swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
-
-pause(pauseT);  % swiper sliding out happens here
-
-% Swiper end position
-swiperImg.XData = swiper.imgX + swiper.def(sound,1);
-swiperImg.YData = swiper.imgY + swiper.def(sound,2);
-end
-
-
-function swiperLoses(sound, pauseT)
-% Swaps swiper out for polish jerry version
-% Moves swiper offscreen - he currently teleports out
-% sound: double of value 1 (left) or 2 (right)
-% pauseT: [s] time to move swiper offscreen
-
-% global variables
-global swiper;  global swiperImg;
-global pSwiper; global pSwiperImg;
-
-% removes normal swiper
-swiperImg.XData = swiper.imgX + swiper.def(sound,1);
-swiperImg.YData = swiper.imgY + swiper.def(sound,2);
-
-% polish jerry that swiper - starting position
-pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.ctr(sound,1);
-pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
-
-pause(pauseT);  % swiper sliding out happens here
-
-% Polish Swiper ending position
-pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.def(sound,1);
-pSwiperImg.YData = pSwiper.imgY + pSwiper.def(sound,2);
-
 end
 
 
@@ -238,6 +171,7 @@ function brainGuess(guess)
 global sBrainImg;   global pBrainImg;   global uTomImg;
 global sBrain;      global pBrain;      global uTom;
 global dt;
+global q;
 
 % checking which side
 gVal = (guess<pi/2) + 1;  % right = 2, left = 1 (for flipping image)
@@ -258,12 +192,79 @@ pBrainImg.YData = pBrain.imgY + pBrain.ctr(gVal,2);
 % reduce tom's transparency - consider mapping it to abs(pi/2 - tg)
 for i=1:100  % run a for loop for 1s
     uTomImg.AlphaData = uTomImg.AlphaData - 1/100;
-    pause(dt);
 end
 
 % add arrow
 % [ADD CODE FOR ARROW]
+q = quiver(400*cos(guess)+2000, 1500-400*sin(guess), 500*cos(guess), -500*sin(guess), LineWidth=2);
 end
+
+
+function swiperOut(sound, guess)
+% Move Swiper offscreen
+% Calls functions depending on guess correctness
+% sound: double of value 1 (left), 2 (right), or 3 (silence)
+% guess: [rad] between (0,pi)
+
+global q;
+% checking which side guessed
+gVal = (guess<pi/2) + 1;  % right = 2, left = 1
+
+% compare guess with actual
+if(gVal == sound)
+    swiperLoses(sound);
+else
+    swiperWins(sound);  % also called when silence
+end
+
+% [ADD CODE TO REMOVE ARROWS]
+delete(q)
+end
+
+
+function swiperWins(sound)
+% Moves swiper offscreen - he currently teleports out
+% Swiper turns around before leaving
+% sound: double of value 1 (left), 2 (right), or 3 (silence)
+
+global swiper;  global swiperImg;   % global variables
+
+% Swiper start position
+swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
+swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
+
+% swiper sliding out happens here
+
+% Swiper end position
+swiperImg.XData = swiper.imgX + swiper.def(sound,1);
+swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+end
+
+
+function swiperLoses(sound)
+% Swaps swiper out for polish jerry version
+% Moves swiper offscreen - he currently teleports out
+% sound: double of value 1 (left) or 2 (right)
+
+% global variables
+global swiper;  global swiperImg;
+global pSwiper; global pSwiperImg;
+
+% removes normal swiper
+swiperImg.XData = swiper.imgX + swiper.def(sound,1);
+swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+
+% polish jerry that swiper - starting position
+pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.ctr(sound,1);
+pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
+
+% swiper sliding out happens here
+
+% Polish Swiper ending position
+pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.def(sound,1);
+pSwiperImg.YData = pSwiper.imgY + pSwiper.def(sound,2);
+end
+
 
 function defaultScene()
 % default scene with straight brain in center, others offscreen
@@ -290,120 +291,3 @@ uTomImg.YData = uTom.imgY + uTom.def(1,2);
 pSwiperImg.XData = pSwiper.imgX + pSwiper.def(1,1);
 pSwiperImg.YData = pSwiper.imgY + pSwiper.def(1,2);
 end
-
-%% Loading in Images
-% % Read swiper image
-% swiperA = imread('swiper.png');
-% [Lx_swiper, Ly_swiper, ~] = size(swiperA);
-% imgLimits(sS,:) = [1-ceil(Lx_swiper/2), floor(Lx_swiper/2), 1-ceil(Ly_swiper/2), floor(Ly_swiper/2)];
-% 
-% % Read brain images
-% brainprofileA = imread('brain.png');
-% brainprofileA = brainprofileA(1:2:end,1:2:end,:);   % downsampling
-% L=length(brainprofileA);
-% imgLimits(pB,:) = [1-ceil(L/2), floor(L/2), 1-ceil(L/2), floor(L/2)];
-% 
-% brainstraightA = imread('brain_straight.png');
-% brainstraightA = brainstraightA(1:4:end, 1:4:end, :); % downsampling
-% [Lx_straightbrain, Ly_straightbrain, ~] = size(brainstraightA);
-% imgLimits(sB,:) = [1-ceil(Lx_straightbrain/2), floor(Lx_straightbrain/2), 1-ceil(Ly_straightbrain/2), floor(Ly_straightbrain/2)];
-% 
-% % Read unsettled tom
-% utomA = imread('unsettled_tom.jpg');
-% [Lx_tom, Ly_tom, ~] = size(utomA);
-% imgLimits(uT,:) = [1-ceil(Lx_tom/2), floor(Lx_tom/2), 1-ceil(Ly_tom/2), floor(Ly_tom/2)];
-% 
-% % Read polish swiper
-% pswiperA = imread('swiper_jerry.png');
-% pswiperA = pswiperA(1:2:end,1:2:end,:); % downsampling
-% [Lx_ps, Ly_ps, ~] = size(pswiperA);
-% imgLimits(pS,:) = [1-ceil(Lx_ps/2), floor(Lx_ps/2), 1-ceil(Ly_ps/2), floor(Ly_ps/2)];
-
-%% Setting up Scenes
-% scene_bg = zeros(LyI,LxI,3, "uint8");     % initialize scene to black bg
-% 
-% % Default: straight brain in center
-% scene_default = scene_bg;
-% refpts_bstr = [(LyI - Lx_straightbrain), (LyI-1); (LxI/2-Ly_straightbrain/2), (LxI/2+Ly_straightbrain/2-1)];
-% scene_default(refpts_bstr(1,1):refpts_bstr(1,2), refpts_bstr(2,1):refpts_bstr(2,2),:) = brainstraightA;
-% 
-% % Sound played (LEFT): swiper
-% scene_swiper = scene_bg;
-% refpts_swiper = [(LyI - Lx_swiper), (LyI-1); 1, Ly_swiper]; % (LxI-Ly_swiper), (LxI-1)];
-% % scene_swiper(refpts_bstr(1,1):refpts_bstr(1,2), refpts_bstr(2,1):refpts_bstr(2,2),:) = brainstraight;
-% scene_swiper(refpts_swiper(1,1):refpts_swiper(1,2), refpts_swiper(2,1):refpts_swiper(2,2),:) = swiperA;
-% 
-% % Sound guess scene (LEFT): brain profile
-% scene_guess = scene_bg;
-% refpts_guess = [(LyI - L), (LyI-1); (LxI/2-L/2), (LxI/2+L/2-1)];
-% scene_guess(refpts_guess(1,1):refpts_guess(1,2), refpts_guess(2,1):refpts_guess(2,2), :) = brainprofileA;
-% 
-% % Unsettled Tom Brain (LEFT)
-% scene_utom = scene_bg;
-% refpts_utom = [(LyI - Lx_tom), (LyI-1); (LxI/2-Ly_tom/2), (LxI/2+Ly_tom/2-1)];
-% scene_utom(refpts_utom(1,1):refpts_utom(1,2), refpts_utom(2,1):refpts_utom(2,2), :) = utomA/2;
-% 
-% % Polish Swiper
-% scene_pswiper = scene_bg;
-% refpts_pswiper = [(LyI - Lx_ps), (LyI-1); 1, Ly_ps];
-% scene_pswiper(refpts_pswiper(1,1):refpts_pswiper(1,2), refpts_pswiper(2,1):refpts_pswiper(2,2), :) = pswiperA;
-
-%% Storage
-
-% clear
-% dt=0.05;
-% x = 0:dt:2*pi;
-% y = 3;
-% % plot(x, y); hold on
-% 
-% %i want my image to move in this way
-% fname = 'brain.png';   
-% [inpict,~,alpha] = imread(fname); 
-% inpict = flipud(inpict); % necessary to keep image upright
-% alpha = flipud(alpha);
-% imgsize = [0.7 0.8]; % [x y] in plot coordinates
-% 
-% % get current coordinates for the image 
-% xx = [-0.5, 0.5]*imgsize(1) + x(1);
-% yy = [-0.5, 0.5]*imgsize(2) + y(1);
-% hi = image(xx,yy,inpict);
-% hi.AlphaData = alpha; % set alpha
-% 
-% % enforce axes extents
-% axis equal
-% x = 0:dt:2*pi;
-% y = sin(x);
-% plot(x, y); hold on
-% 
-% x2 = flip(x);
-% %i want my image to move in this way
-% fname = 'brain.png';   
-% [inpict,~,alpha] = imread(fname); 
-% inpict = flipud(inpict); % necessary to keep image upright
-% alpha = flipud(alpha);
-% imgsize = [0.7 0.8]; % [x y] in plot coordinates
-% 
-% % get current coordinates for the image 
-% xx = [-0.5, 0.5]*imgsize(1) + x(1);
-% yy = [-0.5, 0.5]*imgsize(2) + y(1);
-% hi = image(xx,yy,inpict);
-% hi.AlphaData = alpha; % set alpha
-% 
-% % enforce axes extents
-% axis equal
-% xlim([0 2*pi] + [-0.5 0.5]*imgsize(1))
-% ylim([-1 1] + [-0.5 0.5].*imgsize(2))
-% 
-% for k= 1:numel(x)
-%     hi.XData = [-0.5 0.5]*imgsize(1) + x(k);
-%     hi.YData = [-0.5 0.5]*imgsize(2) + y(k);
-%     % wait
-%     pause(dt)	
-% end
-% 
-% for k= 1:numel(x)
-%     hi.XData = [-0.5 0.5]*imgsize(1) + x2(k);
-%     hi.YData = [-0.5 0.5]*imgsize(2) + y(k);
-%     % wait
-%     pause(dt)	
-% end
