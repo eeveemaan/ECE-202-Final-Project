@@ -5,6 +5,9 @@ clear; close all;
 % this script is designed to rely on WhatSound and tg from RealTimeProcessing
 % currently they aren't used and values are hardcoded in line 31 below
 
+% EXTREMELY IMPORTANT: this script uses pause(); unfortunately, that stops
+% all MATLAB scripts. looking for a workaround
+
 %% Initialize variables
 
 % which sound played
