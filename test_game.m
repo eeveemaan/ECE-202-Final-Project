@@ -98,8 +98,9 @@ global uTomImg;     global pSwiperImg;
 
 % initialize images (all offscreen lol)
 % NOTE: order of image creation matters; they will layer on top of each other
+% actually straightbrain is the only one onscreen
 sBrainImg = image(sBrain.imgX + sBrain.ctr(1,1), sBrain.imgY + sBrain.ctr(1,2), sBrain.pic);
-sBrainImg.AlphaData = sBrain.alpha;
+sBrainImg.AlphaData = sBrain.alpha;     % sets transparency
 
 pBrainImg = image(pBrain.imgX - 800, pBrain.imgY - 800, pBrain.pic);
 pBrainImg.AlphaData = pBrain.alpha;
