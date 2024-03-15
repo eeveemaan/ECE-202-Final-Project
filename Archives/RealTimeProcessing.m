@@ -32,8 +32,6 @@ global savesound;
 global savesoundblock;
 global SoundSel;
 global soundTypeDir
-global tg;
-global WhatSound;
 
 savedata=[];
 savetime=[];
@@ -47,7 +45,7 @@ load('predict/TrainedMNR_fixed.mat');
 % Initialize variable used for playing periodic sounds
 global csound
 csound = timer;
-csound.Period = 8;
+csound.Period = 3;
 csound.TasksToExecute = 10;
 csound.ExecutionMode = 'fixedRate';
 csound.TimerFcn = @(src, event) playSoundCallback();
@@ -68,43 +66,29 @@ global swiper;  global swiperImg;   global sBrain;  global sBrainImg;
 global pBrain;  global pBrainImg;   global uTom;    global uTomImg;
 global pSwiper; global pSwiperImg;
 
+% timer for game
+% global tom_timer
+% tom_timer = timer;
+% % tom_timer.Period = 0.2;
+% % tom_timer.TasksToExecute = 5;
+% % tom_timer.ExecutionMode = 'fixedRate';
+% % tom_timer.BusyMode = 'drop';
+% tom_timer.StartDelay = 0.5;
+% tom_timer.TimerFcn = @(src, event) transparenTom();
 
-global tom_timer    % time for removing tom
-tom_timer = timer;
-tom_timer.Period = 0.1;
-tom_timer.TasksToExecute = 1;
-% tom_timer.ExecutionMode = 'fixedRate';
-% tom_timer.BusyMode = 'drop';
-tom_timer.StartDelay = 0.7;
-tom_timer.TimerFcn = @(src, event) transparenTom();
-
-global guess_timer  % timer between guess and swiper reacting
+global guess_timer
 guess_timer = timer;
-guess_timer.TasksToExecute = 1;
-guess_timer.StartDelay = 0.2;
-guess_timer.TimerFcn = @(src,event) swiperOut();
+guess_timer.StartDelay = 0.7;
 
 global swin_timer
 swin_timer = timer;
-swin_timer.TasksToExecute = 1;
 % swin_timer.BusyMode = 'drop';
-% swin_timer.Period = 0.7;
-swin_timer.StartDelay = 0.3;
-swin_timer.TimerFcn = @(src, event) swiperWins();
+% swin_timer.StartDelay = 0.5;
 
 global sloss_timer
 sloss_timer = timer;
-sloss_timer.TasksToExecute = 1;
 % sloss_timer.BusyMode = 'drop';
-% sloss_timer.Period = 0.7;
-sloss_timer.StartDelay = 0.3;
-sloss_timer.TimerFcn = @(src, event) swiperLoses();
-
-global default_timer
-default_timer = timer;
-default_timer.TasksToExecute = 1;
-default_timer.StartDelay = 0.5;
-default_timer.TimerFcn = @(src, event) defaultScene();
+% sloss_timer.StartDelay = 0.5;
 
 % When 'run' is clicked - begin realtime streaming and plotting
 function run(runButtonGroup)
@@ -114,7 +98,7 @@ global initialized
 global tcommand
 global typeString
 global currentPlotBand
-%global ampDataFigure
+global ampDataFigure
 global stopped
 global gameFigure
 
@@ -183,22 +167,22 @@ if initialized == 0
     updateUIStatus('Preparing MATLAB to start streaming...');
     pause(1);
     
-    % % Create figure
-    % ampDataFigure = figure(1);
-    % ampDataFigure.Name = ['Amplifier Data - ', currentPlotBand];
+    % Create figure
+    ampDataFigure = figure(1);
+    ampDataFigure.Name = ['Amplifier Data - ', currentPlotBand];
     
     % Mark initialization as complete
     initialized = 1;   
     
     ts=0; tg=-pi/2;
-    % subplot(2,2,[2 4])
-    % disp_arrows;
+    subplot(2,2,[2 4])
+    disp_arrows;
 
     % Create figure for game
     gameFigure = figure(2);
     gameWindowSetup; % call a function to initialize all images
 
-    % figure(ampDataFigure)
+    figure(ampDataFigure)
 end
 
 % Mark system as running
@@ -308,28 +292,28 @@ while get(runButtonGroup.Children(2), 'Value')
         end
         
         % Plot each channel
-        % for thisPlot = 1:numAmpChannels
-        %     subplot(numAmpChannels, 2, 2*thisPlot-1);
-        %     if thisPlot == 1
-        %         % For the first channel, sort out immediate spikes to plot,
-        %         % delayed spikes to plot, and actually plot
-        %         [t1, delayedT1] = prepareSpikes(thisPlot, numSpikes, SpikesToPlot, minAxis, maxAxis, delayedT1, latestPlottedWaveformTimestamp);
-        %         ylimits = get(gca, 'YLim');
-        %         ymin = ylimits(1);
-        %         ymax = ylimits(2);
-        %         plotPreparedSpikes(t1, ymin, ymax);
-        %         delayedT1 = plotDelayedSpikes(delayedT1, minAxis, maxAxis);
-        %     else
-        %         % For the second channel, sort out immediate spikes to
-        %         % plot, delayed spikes to plot, and actually plot
-        %         [t2, delayedT2] = prepareSpikes(thisPlot, numSpikes, SpikesToPlot, minAxis, maxAxis, delayedT2, latestPlottedWaveformTimestamp);
-        %         ylimits = get(gca, 'YLim');
-        %         ymin = ylimits(1);
-        %         ymax = ylimits(2);
-        %         plotPreparedSpikes(t2, ymin, ymax);
-        %         delayedT2 = plotDelayedSpikes(delayedT2, minAxis, maxAxis);
-        %     end
-        % end
+        for thisPlot = 1:numAmpChannels
+            subplot(numAmpChannels, 2, 2*thisPlot-1);
+            if thisPlot == 1
+                % For the first channel, sort out immediate spikes to plot,
+                % delayed spikes to plot, and actually plot
+                [t1, delayedT1] = prepareSpikes(thisPlot, numSpikes, SpikesToPlot, minAxis, maxAxis, delayedT1, latestPlottedWaveformTimestamp);
+                ylimits = get(gca, 'YLim');
+                ymin = ylimits(1);
+                ymax = ylimits(2);
+                plotPreparedSpikes(t1, ymin, ymax);
+                delayedT1 = plotDelayedSpikes(delayedT1, minAxis, maxAxis);
+            else
+                % For the second channel, sort out immediate spikes to
+                % plot, delayed spikes to plot, and actually plot
+                [t2, delayedT2] = prepareSpikes(thisPlot, numSpikes, SpikesToPlot, minAxis, maxAxis, delayedT2, latestPlottedWaveformTimestamp);
+                ylimits = get(gca, 'YLim');
+                ymin = ylimits(1);
+                ymax = ylimits(2);
+                plotPreparedSpikes(t2, ymin, ymax);
+                delayedT2 = plotDelayedSpikes(delayedT2, minAxis, maxAxis);
+            end
+        end
         SpikesToPlot = struct;
         numSpikes = 0;
     end
@@ -428,31 +412,31 @@ while get(runButtonGroup.Children(2), 'Value')
         % Scale these 10 data blocks
         amplifierData = 0.195 * (amplifierData - 32768);
         
-        % % Plot
-        % % Amp channels
-        % figure(ampDataFigure);
-        % 
-        % % Plot each channel
-        % for thisPlot = 1:numAmpChannels
-        %     subplot(numAmpChannels, 2, 2*thisPlot-1);
-        %     % For every 10 chunks, plot with hold 'off' to clear the
-        %     % previous plot. In all other cases, plot with hold 'on' to add
-        %     % each 10 data-block chunk to the previous chunks
-        %     if chunkCounter ~= 1
-        %         hold on
-        %     end
-        %     plot(amplifierTimestamps, amplifierData(thisPlot, :), 'Color', 'blue');
-        %     hold off
-        %     latestPlottedWaveformTimestamp = amplifierTimestamps(end); 
-        % 
-        %     if thisPlot == 1
-        %         title(['Channel A-' num2str(StartChannel, '%03d')])
-        %     else
-        %         title(['Channel A-' num2str(StartChannel+1, '%03d')])
-        %     end
-        %     %axis([minAxis maxAxis -400 400]);
-        % 
-        % end
+        % Plot
+        % Amp channels
+        figure(ampDataFigure);
+        
+        % Plot each channel
+        for thisPlot = 1:numAmpChannels
+            subplot(numAmpChannels, 2, 2*thisPlot-1);
+            % For every 10 chunks, plot with hold 'off' to clear the
+            % previous plot. In all other cases, plot with hold 'on' to add
+            % each 10 data-block chunk to the previous chunks
+            if chunkCounter ~= 1
+                hold on
+            end
+            plot(amplifierTimestamps, amplifierData(thisPlot, :), 'Color', 'blue');
+            hold off
+            latestPlottedWaveformTimestamp = amplifierTimestamps(end); 
+
+            if thisPlot == 1
+                title(['Channel A-' num2str(StartChannel, '%03d')])
+            else
+                title(['Channel A-' num2str(StartChannel+1, '%03d')])
+            end
+            %axis([minAxis maxAxis -400 400]);
+
+        end
     
         % subplot(numAmpChannels,2,2*numAmpChannels+1)
         %     if chunkCounter ~= 1
@@ -550,14 +534,14 @@ end
 
 % Iterate through all spikes in t and plot each immediately
 function plotPreparedSpikes(t, ymin, ymax)
-% hold on
-% deltay = ymax - ymin;
-% y1 = ymin + (1.0 / 8.0) * deltay;
-% y2 = ymin + (2.0 / 8.0) * deltay;
-% for tSpike = t
-%     line([tSpike tSpike], [y1 y2], 'Color', 'red', 'LineWidth', 2);
-% end
-% hold off
+hold on
+deltay = ymax - ymin;
+y1 = ymin + (1.0 / 8.0) * deltay;
+y2 = ymin + (2.0 / 8.0) * deltay;
+for tSpike = t
+    line([tSpike tSpike], [y1 y2], 'Color', 'red', 'LineWidth', 2);
+end
+hold off
 end
 
 % Iterate through all spikes in delayedT. If the current waveform position
@@ -566,25 +550,25 @@ end
 % waveform position still hasn't reached the spike, then it stays in
 % delayedT
 function delayedT = plotDelayedSpikes(delayedT, minAxis, maxAxis)
-% hold on
-% y1 = -350;
-% y2 = -250;
-% deleteIndices = [];
-% for spikeIndex = 1:length(delayedT)
-%     tSpike = delayedT(spikeIndex);
-%     if tSpike < minAxis
-%         % lost for good - mark this spike for deletion
-%         fprintf(1, 'LOST SPIKE\n');
-%         deleteIndices(length(deleteIndices) + 1) = spikeIndex;
-%     elseif tSpike > maxAxis
-%         % delayed and still waiting for waveform to catch up - do nothing
-%     else
-%         % valid to plot - plot and mark this spike for deletion
-%         line([tSpike tSpike], [y1 y2], 'Color', 'red', 'LineWidth', 2);
-%         deleteIndices(length(deleteIndices) + 1) = spikeIndex;
-%     end
-% end
-% hold off
+hold on
+y1 = -350;
+y2 = -250;
+deleteIndices = [];
+for spikeIndex = 1:length(delayedT)
+    tSpike = delayedT(spikeIndex);
+    if tSpike < minAxis
+        % lost for good - mark this spike for deletion
+        fprintf(1, 'LOST SPIKE\n');
+        deleteIndices(length(deleteIndices) + 1) = spikeIndex;
+    elseif tSpike > maxAxis
+        % delayed and still waiting for waveform to catch up - do nothing
+    else
+        % valid to plot - plot and mark this spike for deletion
+        line([tSpike tSpike], [y1 y2], 'Color', 'red', 'LineWidth', 2);
+        deleteIndices(length(deleteIndices) + 1) = spikeIndex;
+    end
+end
+hold off
 % Delete all entries in delayedT that have been marked for deletion
 for index = length(deleteIndices):-1:1
     delayedT(deleteIndices(index)) = [];
@@ -642,25 +626,22 @@ end
 % Create the main UI window that contains control buttons
 function createMainUI()
 global hs
-% global ampDataFigure
+global ampDataFigure
 global gameFigure
 global initialized
 global currentPlotBand
 global SoundSel
 global soundTypeDir
-% global WhatSound
-
 % Add the UI components
 hs = addUIComponents();
 % Make figure visible after adding components
 hs.fig.Visible = 'on';
 % Initialize ampDataFigure to 0 to be changed when actually created
-% ampDataFigure = 0;
+ampDataFigure = 0;
 gameFigure = 0;
 initialized = 0;
 currentPlotBand = 'Wide';
 SoundSel = 3;
-% WhatSound = 1;
 soundTypeDir = "Silence";
 end
 
@@ -753,13 +734,13 @@ end
 
 % Band button change callback function
 function bandButtonChanged(source,event)
-% global currentPlotBand
-% global ampDataFigure
-% currentPlotBand = event.NewValue.Text;
-% % If ampDataFigure already exists, change its name
-% if ampDataFigure ~= 0
-%     ampDataFigure.Name = ['Amplifier Data - ', currentPlotBand];
-% end
+global currentPlotBand
+global ampDataFigure
+currentPlotBand = event.NewValue.Text;
+% If ampDataFigure already exists, change its name
+if ampDataFigure ~= 0
+    ampDataFigure.Name = ['Amplifier Data - ', currentPlotBand];
+end
 end
 
 % Run button change callback function
@@ -808,9 +789,8 @@ end
 function playSoundCallback()
     global SoundSel;
     global soundTypeDir;
-    % global ampDataFigure;
+    global ampDataFigure;
     global gameFigure;
-    global WhatSound;
     
     %WhatSound=PlaySoundSel(SoundSel); % Old fn, uses normal sound fn
     WhatSound=PSS_AP(SoundSel);        % Uses the new audio playback thingy
@@ -824,14 +804,16 @@ function playSoundCallback()
     global ts
     ts= pi/2*((WhatSound==0)+(WhatSound==3))+pi*(WhatSound==1);
     tg=-pi/2;
-    % figure(ampDataFigure);
-    % subplot(2,2,[2 4])
-    % disp_arrows;
+    figure(ampDataFigure);
+    subplot(2,2,[2 4])
+    disp_arrows;
     
     figure(gameFigure);
     % defaultScene();
-    swiperIn();
-    % figure(ampDataFigure);
+    swiperIn(WhatSound);
+    global checkWS
+    checkWS = WhatSound;
+    figure(ampDataFigure);
 
     global action_timer
     start(action_timer);
@@ -863,7 +845,7 @@ function UpdateAngle()
     Trt = 1; Fs=5000;
     Nrt = Fs*Trt;
 
-    % global ampDataFigure;
+    global ampDataFigure;
     global gameFigure;
     
     global savedata
@@ -886,22 +868,23 @@ function UpdateAngle()
     else
         dirsound=-1;
     end
-
-    global tg;
+        
     %tg=randi(180)*pi/180;
     tg = pi/2*(1+confsound*dirsound);
 
     global ts
-    % figure(ampDataFigure);
-    % subplot(2,2,[2 4]);
-    % disp_arrows;
+    figure(ampDataFigure);
+    subplot(2,2,[2 4]);
+    disp_arrows;
 
     figure(gameFigure);
-    brainGuess();
-    global tom_timer; start(tom_timer);
-    global guess_timer; start(guess_timer);
+    brainGuess(tg);
+    % global tom_timer; start(tom_timer);
+    global guess_timer; global checkWS;
+    guess_timer.TimerFcn = @(src,event) swiperOut(checkWS, tg);
+    start(guess_timer);
 
-    % figure(ampDataFigure);
+    figure(ampDataFigure);
 end
 
 % Update soundPlaying with last played sound
@@ -996,57 +979,56 @@ function CalibrateAudio()
 end
 
 % GAME FUNCTIONS BELOW
-function swiperIn()
+function swiperIn(sound)
 % Move Swiper onscreen
 % Currently he only teleports in, can hopefully modify to slide in
 % sound: double of value 1 (left), 2 (right), or 3 (silence)
 
 global swiper;  global swiperImg;   % global variables
-global WhatSound;
 
 % Swiper start position: (-1)^(sound-1) will flip image if sound=2
-swiperImg.XData = swiper.imgX*(-1)^(WhatSound-1) + swiper.def(WhatSound,1);
-% swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.def(sound,1);
+swiperImg.YData = swiper.imgY + swiper.def(sound,2);
 
 % swiper sliding in happens here
 
 % Swiper end position
-swiperImg.XData = swiper.imgX*(-1)^(WhatSound-1) + swiper.ctr(WhatSound,1);
-% swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
+swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.ctr(sound,1);
+swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
 end
 
-function brainGuess()
+function brainGuess(guess)
 % brain makes a guess
 % guess: [rad] tg from RealtimeProcessing UpdateAngle()
 
 % global variables
 global sBrainImg;   global pBrainImg;   global uTomImg;
 global sBrain;      global pBrain;      global uTom;
-global qArrow;      global tg;
+global qArrow;
 
 % checking which side
-gVal = (tg<pi/2) + 1;  % right = 2, left = 1 (for flipping image)
+gVal = (guess<pi/2) + 1;  % right = 2, left = 1 (for flipping image)
 
 % unsettled tom time
 uTomImg.XData = uTom.imgX*(-1)^(gVal-1) + uTom.ctr(gVal,1);
-% uTomImg.YData = uTom.imgY + uTom.ctr(gVal,2);
+uTomImg.YData = uTom.imgY + uTom.ctr(gVal,2);
 uTomImg.AlphaData = 1;  % solidifying tom just in case
 
 % move straight brain offscreen
 sBrainImg.XData = sBrain.imgX + sBrain.def(gVal,1);
-% sBrainImg.YData = sBrain.imgY + sBrain.def(gVal,2);
+sBrainImg.YData = sBrain.imgY + sBrain.def(gVal,2);
 
 % move brain profile onscreen
 pBrainImg.XData = pBrain.imgX*(-1)^(gVal-1) + pBrain.ctr(gVal,1);
-% pBrainImg.YData = pBrain.imgY + pBrain.ctr(gVal,2);
+pBrainImg.YData = pBrain.imgY + pBrain.ctr(gVal,2);
 
 % add arrow
 % [ADD CODE FOR ARROWS]
-qArrow = quiver(400*cos(tg)+2000, 1500-400*sin(tg), 500*cos(tg), -500*sin(tg), LineWidth=2);
+qArrow = quiver(400*cos(guess)+2000, 1500-400*sin(guess), 500*cos(guess), -500*sin(guess), LineWidth=2);
 end
 
 
-function swiperOut()
+function swiperOut(sound, guess)
 % Move Swiper offscreen
 % Calls functions depending on guess correctness
 % sound: [rad] of value pi (left), 0 (right), or pi/2 (silence)
@@ -1054,43 +1036,46 @@ function swiperOut()
 
 % global variables
 global swiper;  global swiperImg; global pSwiper; global pSwiperImg;
-global swin_timer; global sloss_timer; global default_timer;
-global qArrow; global WhatSound; global tg;
+global swin_timer; global sloss_timer;
+global qArrow;
 
 % checking which side guessed
 % sVal = (sound<pi/2) + (sound==3*pi/2) + 1; % right = 2, left = 1, silence = 3
-gVal = (tg<pi/2) + 1;  % right = 2, left = 1
+gVal = (guess<pi/2) + 1;  % right = 2, left = 1
 
-% transparenTom();    % remove tom by changing opacity to 0
+transparenTom();    % remove tom by changing opacity to 0
 
+sloss_timer.TimerFcn = @(src, event) swiperLoses(sound);
+swin_timer.TimerFcn = @(src, event) swiperWins(sound);
+swin_timer.StopFcn = @(src, event) defaultScene();
+sloss_timer.StopFcn = @(src, event) defaultScene();
 % compare guess with actual, initialize swiper, call win/loss functions
-if(gVal == WhatSound)
+if(gVal == sound)
     % polish jerry that swiper
-    swiperImg.XData = swiper.imgX + swiper.def(WhatSound,1);
-    % swiperImg.YData = swiper.imgY + swiper.def(sound,2);
-    pSwiperImg.XData = pSwiper.imgX*(-1)^(WhatSound-1) + pSwiper.ctr(WhatSound,1);
-    % pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
+    swiperImg.XData = swiper.imgX + swiper.def(sound,1);
+    swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+    pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.ctr(sound,1);
+    pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
     start(sloss_timer);
     % swiperLoses(sVal);
 else
-    swiperImg.XData = swiper.imgX*(-1)^(WhatSound) + swiper.ctr(WhatSound,1);
-    % swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
+    swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
+    swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
     start(swin_timer);
     % swiperWins(sVal);  % also called when silence
 end
-start(default_timer);
 % [ADD CODE TO REMOVE ARROWS]
 delete(qArrow);
 end
 
 
-function swiperWins()
+function swiperWins(sound)
 % Moves swiper offscreen - he currently teleports out
 % Swiper turns around before leaving
 % sound: double of value 1 (left), 2 (right), or 3 (silence)
 
 % global variables
-global swiper;  global swiperImg;   global WhatSound;
+global swiper;  global swiperImg;   %global swiper_timer;
 
 % % Swiper start position
 % swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
@@ -1101,19 +1086,19 @@ global swiper;  global swiperImg;   global WhatSound;
 
 
 % Swiper end position
-swiperImg.XData = swiper.imgX + swiper.def(WhatSound,1);
-% swiperImg.YData = swiper.imgY + swiper.def(sound,2);
+swiperImg.XData = swiper.imgX + swiper.def(sound,1);
+swiperImg.YData = swiper.imgY + swiper.def(sound,2);
 end
 
 
-function swiperLoses()
+function swiperLoses(sound)
 % Swaps swiper out for polish jerry version
 % Moves swiper offscreen - he currently teleports out
 % sound: double of value 1 (left) or 2 (right)
 
 % global variables
 global swiper;  global swiperImg;
-global pSwiper; global pSwiperImg;  global WhatSound;
+global pSwiper; global pSwiperImg;
 
 % % removes normal swiper
 % swiperImg.XData = swiper.imgX + swiper.def(sound,1);
@@ -1126,8 +1111,8 @@ global pSwiper; global pSwiperImg;  global WhatSound;
 % swiper sliding out happens here
 
 % Polish Swiper ending position
-pSwiperImg.XData = pSwiper.imgX*(-1)^(WhatSound-1) + pSwiper.def(WhatSound,1);
-% pSwiperImg.YData = pSwiper.imgY + pSwiper.def(sound,2);
+pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.def(sound,1);
+pSwiperImg.YData = pSwiper.imgY + pSwiper.def(sound,2);
 end
 
 
@@ -1137,29 +1122,27 @@ function defaultScene()
 % global variables
 global swiper;  global swiperImg;   global sBrain;  global sBrainImg;
 global pBrain;  global pBrainImg;   global uTom;    global uTomImg;
-global pSwiper; global pSwiperImg;  %global qArrow;
+global pSwiper; global pSwiperImg;
 
 % straight brain in center
 sBrainImg.XData = sBrain.imgX + sBrain.ctr(1,1);
-% sBrainImg.YData = sBrain.imgY + sBrain.ctr(1,2);
+sBrainImg.YData = sBrain.imgY + sBrain.ctr(1,2);
 
 % everyone else default (offscreen)
 swiperImg.XData = swiper.imgX + swiper.def(1,1);
-% swiperImg.YData = swiper.imgY + swiper.def(1,2);
+swiperImg.YData = swiper.imgY + swiper.def(1,2);
 
 pBrainImg.XData = pBrain.imgX + pBrain.def(1,1);
-% pBrainImg.YData = pBrain.imgY + pBrain.def(1,2);
+pBrainImg.YData = pBrain.imgY + pBrain.def(1,2);
 
 uTomImg.XData = uTom.imgX + uTom.def(1,1);
-% uTomImg.YData = uTom.imgY + uTom.def(1,2);
+uTomImg.YData = uTom.imgY + uTom.def(1,2);
 
 pSwiperImg.XData = pSwiper.imgX + pSwiper.def(1,1);
-% pSwiperImg.YData = pSwiper.imgY + pSwiper.def(1,2);
-
+pSwiperImg.YData = pSwiper.imgY + pSwiper.def(1,2);
 end
 
 function transparenTom()
 global uTomImg;
 uTomImg.AlphaData = 0;
-% uTomImg.AlphaData = uTomImg.AlphaData - 0.1;
 end

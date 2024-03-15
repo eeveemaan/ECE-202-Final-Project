@@ -61,35 +61,6 @@ action_timer.TimerFcn = @(src, event) UpdateAngle();
 
 %global amplifierTimestamps
 
-% Global variables for game images
-global swiper;  global swiperImg;   global sBrain;  global sBrainImg;
-global pBrain;  global pBrainImg;   global uTom;    global uTomImg;
-global pSwiper; global pSwiperImg;
-
-% timer for game
-% global tom_timer
-% tom_timer = timer;
-% % tom_timer.Period = 0.2;
-% % tom_timer.TasksToExecute = 5;
-% % tom_timer.ExecutionMode = 'fixedRate';
-% % tom_timer.BusyMode = 'drop';
-% tom_timer.StartDelay = 0.5;
-% tom_timer.TimerFcn = @(src, event) transparenTom();
-
-global guess_timer
-guess_timer = timer;
-guess_timer.StartDelay = 0.7;
-
-global swin_timer
-swin_timer = timer;
-% swin_timer.BusyMode = 'drop';
-% swin_timer.StartDelay = 0.5;
-
-global sloss_timer
-sloss_timer = timer;
-% sloss_timer.BusyMode = 'drop';
-% sloss_timer.StartDelay = 0.5;
-
 % When 'run' is clicked - begin realtime streaming and plotting
 function run(runButtonGroup)
 
@@ -100,7 +71,6 @@ global typeString
 global currentPlotBand
 global ampDataFigure
 global stopped
-global gameFigure
 
 global savedata
 global savetime
@@ -177,12 +147,6 @@ if initialized == 0
     ts=0; tg=-pi/2;
     subplot(2,2,[2 4])
     disp_arrows;
-
-    % Create figure for game
-    gameFigure = figure(2);
-    gameWindowSetup; % call a function to initialize all images
-
-    figure(ampDataFigure)
 end
 
 % Mark system as running
@@ -627,7 +591,6 @@ end
 function createMainUI()
 global hs
 global ampDataFigure
-global gameFigure
 global initialized
 global currentPlotBand
 global SoundSel
@@ -638,7 +601,6 @@ hs = addUIComponents();
 hs.fig.Visible = 'on';
 % Initialize ampDataFigure to 0 to be changed when actually created
 ampDataFigure = 0;
-gameFigure = 0;
 initialized = 0;
 currentPlotBand = 'Wide';
 SoundSel = 3;
@@ -711,6 +673,18 @@ hs.haPhasicButton = uiradiobutton(hs.soundPickGroup,...
     'Position', [10, 2, 200, 22],...
     'Value', 0);
 set(hs.soundPickGroup, 'SelectionChangedFcn', @soundButtonChanged);
+
+% Sound function buttons
+% hs.soundFuncGroup = uibuttongroup(hs.mainUI,...
+%     'Position', [120, 4, 230, 30]);
+% hs.contSoundButton = uibutton(hs.mainUI,...
+%     'Text', 'Continuous',...
+%     'Position', [130, 4, 100, 22],...
+%     'ButtonPushedFcn', @(btn,event) playContSound());
+% hs.contSoundButton = uibutton(hs.mainUI,...
+%     'Text', 'Pulsed',...
+%     'Position', [240, 4, 100, 22],...
+%     'ButtonPushedFcn', @(btn,event) playPulseSound());
 
 % Add "Loop Sound" button
 hs.LoopSoundButton = uibutton(hs.mainUI,...
@@ -789,8 +763,6 @@ end
 function playSoundCallback()
     global SoundSel;
     global soundTypeDir;
-    global ampDataFigure;
-    global gameFigure;
     
     %WhatSound=PlaySoundSel(SoundSel); % Old fn, uses normal sound fn
     WhatSound=PSS_AP(SoundSel);        % Uses the new audio playback thingy
@@ -804,18 +776,10 @@ function playSoundCallback()
     global ts
     ts= pi/2*((WhatSound==0)+(WhatSound==3))+pi*(WhatSound==1);
     tg=-pi/2;
-    figure(ampDataFigure);
     subplot(2,2,[2 4])
     disp_arrows;
     
-    figure(gameFigure);
-    % defaultScene();
-    swiperIn(WhatSound);
-    global checkWS
-    checkWS = WhatSound;
-    figure(ampDataFigure);
-
-    global action_timer
+    global  action_timer
     start(action_timer);
 end
 
@@ -840,13 +804,34 @@ function LoopSoundCallback()
     start(csound);
 end
 
+% function playContSound(source, event)
+% if strcmp(event.NewValue.Text, 'Continuous')
+%     % % may have to modify "run" to play sound, but try without for now
+%     % run(source);
+%     % [insert timed sound function here]
+%     % % in theory, should be able to call "stop" with no changes
+%     % stop;
+% elseif strcmp(event.NewValue.Text, 'Pulsed')
+%     % make it unable to be pressed, if possible
+% end
+% end
+% 
+% function playPulseSound(source, event)
+% if strcmp(event.NewValue.Text, 'Pulsed')
+%     % % may have to modify "run" to play sound, but try without for now
+%     % run(source);
+%     % % [insert timed sound function here]
+%     % % in theory, should be able to call "stop" with no changes
+%     % stop;
+% elseif strcmp(event.NewValue.Text, 'Continuous')
+%     % make it unable to be pressed, if possible
+% end
+% end
+
 function UpdateAngle()
     % REAL TIME EEG DEMO STUFF GOES HERE
     Trt = 1; Fs=5000;
     Nrt = Fs*Trt;
-
-    global ampDataFigure;
-    global gameFigure;
     
     global savedata
     curr_block = savedata(:,end-Nrt:end);
@@ -873,18 +858,8 @@ function UpdateAngle()
     tg = pi/2*(1+confsound*dirsound);
 
     global ts
-    figure(ampDataFigure);
     subplot(2,2,[2 4]);
     disp_arrows;
-
-    figure(gameFigure);
-    brainGuess(tg);
-    % global tom_timer; start(tom_timer);
-    global guess_timer; global checkWS;
-    guess_timer.TimerFcn = @(src,event) swiperOut(checkWS, tg);
-    start(guess_timer);
-
-    figure(ampDataFigure);
 end
 
 % Update soundPlaying with last played sound
@@ -978,171 +953,5 @@ function CalibrateAudio()
     disp(Ball);
 end
 
-% GAME FUNCTIONS BELOW
-function swiperIn(sound)
-% Move Swiper onscreen
-% Currently he only teleports in, can hopefully modify to slide in
-% sound: double of value 1 (left), 2 (right), or 3 (silence)
-
-global swiper;  global swiperImg;   % global variables
-
-% Swiper start position: (-1)^(sound-1) will flip image if sound=2
-swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.def(sound,1);
-swiperImg.YData = swiper.imgY + swiper.def(sound,2);
-
-% swiper sliding in happens here
-
-% Swiper end position
-swiperImg.XData = swiper.imgX*(-1)^(sound-1) + swiper.ctr(sound,1);
-swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
-end
-
-function brainGuess(guess)
-% brain makes a guess
-% guess: [rad] tg from RealtimeProcessing UpdateAngle()
-
-% global variables
-global sBrainImg;   global pBrainImg;   global uTomImg;
-global sBrain;      global pBrain;      global uTom;
-global qArrow;
-
-% checking which side
-gVal = (guess<pi/2) + 1;  % right = 2, left = 1 (for flipping image)
-
-% unsettled tom time
-uTomImg.XData = uTom.imgX*(-1)^(gVal-1) + uTom.ctr(gVal,1);
-uTomImg.YData = uTom.imgY + uTom.ctr(gVal,2);
-uTomImg.AlphaData = 1;  % solidifying tom just in case
-
-% move straight brain offscreen
-sBrainImg.XData = sBrain.imgX + sBrain.def(gVal,1);
-sBrainImg.YData = sBrain.imgY + sBrain.def(gVal,2);
-
-% move brain profile onscreen
-pBrainImg.XData = pBrain.imgX*(-1)^(gVal-1) + pBrain.ctr(gVal,1);
-pBrainImg.YData = pBrain.imgY + pBrain.ctr(gVal,2);
-
-% add arrow
-% [ADD CODE FOR ARROWS]
-qArrow = quiver(400*cos(guess)+2000, 1500-400*sin(guess), 500*cos(guess), -500*sin(guess), LineWidth=2);
-end
 
 
-function swiperOut(sound, guess)
-% Move Swiper offscreen
-% Calls functions depending on guess correctness
-% sound: [rad] of value pi (left), 0 (right), or pi/2 (silence)
-% guess: [rad] between (0,pi)
-
-% global variables
-global swiper;  global swiperImg; global pSwiper; global pSwiperImg;
-global swin_timer; global sloss_timer;
-global qArrow;
-
-% checking which side guessed
-% sVal = (sound<pi/2) + (sound==3*pi/2) + 1; % right = 2, left = 1, silence = 3
-gVal = (guess<pi/2) + 1;  % right = 2, left = 1
-
-transparenTom();    % remove tom by changing opacity to 0
-
-sloss_timer.TimerFcn = @(src, event) swiperLoses(sound);
-swin_timer.TimerFcn = @(src, event) swiperWins(sound);
-swin_timer.StopFcn = @(src, event) defaultScene();
-sloss_timer.StopFcn = @(src, event) defaultScene();
-% compare guess with actual, initialize swiper, call win/loss functions
-if(gVal == sound)
-    % polish jerry that swiper
-    swiperImg.XData = swiper.imgX + swiper.def(sound,1);
-    swiperImg.YData = swiper.imgY + swiper.def(sound,2);
-    pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.ctr(sound,1);
-    pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
-    start(sloss_timer);
-    % swiperLoses(sVal);
-else
-    swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
-    swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
-    start(swin_timer);
-    % swiperWins(sVal);  % also called when silence
-end
-% [ADD CODE TO REMOVE ARROWS]
-delete(qArrow);
-end
-
-
-function swiperWins(sound)
-% Moves swiper offscreen - he currently teleports out
-% Swiper turns around before leaving
-% sound: double of value 1 (left), 2 (right), or 3 (silence)
-
-% global variables
-global swiper;  global swiperImg;   %global swiper_timer;
-
-% % Swiper start position
-% swiperImg.XData = swiper.imgX*(-1)^(sound) + swiper.ctr(sound,1);
-% swiperImg.YData = swiper.imgY + swiper.ctr(sound,2);
-
-
-% swiper sliding out happens here
-
-
-% Swiper end position
-swiperImg.XData = swiper.imgX + swiper.def(sound,1);
-swiperImg.YData = swiper.imgY + swiper.def(sound,2);
-end
-
-
-function swiperLoses(sound)
-% Swaps swiper out for polish jerry version
-% Moves swiper offscreen - he currently teleports out
-% sound: double of value 1 (left) or 2 (right)
-
-% global variables
-global swiper;  global swiperImg;
-global pSwiper; global pSwiperImg;
-
-% % removes normal swiper
-% swiperImg.XData = swiper.imgX + swiper.def(sound,1);
-% swiperImg.YData = swiper.imgY + swiper.def(sound,2);
-% 
-% % replace with polish jerry swiper - starting position
-% pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.ctr(sound,1);
-% pSwiperImg.YData = pSwiper.imgY + pSwiper.ctr(sound,2);
-
-% swiper sliding out happens here
-
-% Polish Swiper ending position
-pSwiperImg.XData = pSwiper.imgX*(-1)^(sound-1) + pSwiper.def(sound,1);
-pSwiperImg.YData = pSwiper.imgY + pSwiper.def(sound,2);
-end
-
-
-function defaultScene()
-% default scene with straight brain in center, others offscreen
-
-% global variables
-global swiper;  global swiperImg;   global sBrain;  global sBrainImg;
-global pBrain;  global pBrainImg;   global uTom;    global uTomImg;
-global pSwiper; global pSwiperImg;
-
-% straight brain in center
-sBrainImg.XData = sBrain.imgX + sBrain.ctr(1,1);
-sBrainImg.YData = sBrain.imgY + sBrain.ctr(1,2);
-
-% everyone else default (offscreen)
-swiperImg.XData = swiper.imgX + swiper.def(1,1);
-swiperImg.YData = swiper.imgY + swiper.def(1,2);
-
-pBrainImg.XData = pBrain.imgX + pBrain.def(1,1);
-pBrainImg.YData = pBrain.imgY + pBrain.def(1,2);
-
-uTomImg.XData = uTom.imgX + uTom.def(1,1);
-uTomImg.YData = uTom.imgY + uTom.def(1,2);
-
-pSwiperImg.XData = pSwiper.imgX + pSwiper.def(1,1);
-pSwiperImg.YData = pSwiper.imgY + pSwiper.def(1,2);
-end
-
-function transparenTom()
-global uTomImg;
-uTomImg.AlphaData = 0;
-end
