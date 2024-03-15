@@ -19,10 +19,10 @@ resz = 1;   % resizing image
 swiper.imgX = [-resz resz]*x; swiper.imgY = [-resz resz]*y;
 
 % image onscreen center coords left (1,:), right (2,:), and silence (3,:)
-swiper.ctr = [xSwiper, LyI-500; LxI-xSwiper, LyI-500; -800, -800];
+swiper.ctr = [xSwiper, LyI-500; LxI-xSwiper, LyI-500; -x, LyI-500];
 
 % image offscreen default coords left (1,:), right (2,:), and silence (3,:)
-swiper.def = [-x, LyI-500; LxI+x, LyI-500; -800, -800];
+swiper.def = [-x, LyI-500; LxI+x, LyI-500; -x, LyI-500];
 
 
 % Read brain images
@@ -68,15 +68,15 @@ imshow(scene_bg); hold on;
 sBrainImg = image(sBrain.imgX + sBrain.ctr(1,1), sBrain.imgY + sBrain.ctr(1,2), sBrain.pic);
 sBrainImg.AlphaData = sBrain.alpha;     % sets transparency
 
-pBrainImg = image(pBrain.imgX - 800, pBrain.imgY - 800, pBrain.pic);
+pBrainImg = image(pBrain.imgX + pBrain.def(1,1), pBrain.imgY + pBrain.def(1,2), pBrain.pic);
 pBrainImg.AlphaData = pBrain.alpha;
 
-swiperImg = image(swiper.imgX - 800, swiper.imgY - 800, swiper.pic);
+swiperImg = image(swiper.imgX + swiper.def(1,1), swiper.imgY + swiper.def(1,2), swiper.pic);
 swiperImg.AlphaData = swiper.alpha;
 
-uTomImg = image(uTom.imgX - 800, uTom.imgY - 800, uTom.pic);
+uTomImg = image(uTom.imgX + uTom.def(1,1), uTom.imgY + uTom.def(1,2), uTom.pic);
 
-pSwiperImg = image(pSwiper.imgX - 800, pSwiper.imgY - 800, pSwiper.pic);%.*(pSwiper.alpha/255));
+pSwiperImg = image(pSwiper.imgX + pSwiper.def(1,1), pSwiper.imgY + pSwiper.def(1,2), pSwiper.pic);%.*(pSwiper.alpha/255));
 pSwiperImg.AlphaData = pSwiper.alpha;
 
 end
