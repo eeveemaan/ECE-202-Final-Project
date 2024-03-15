@@ -31,8 +31,6 @@ Code and data for model training and results, stored in "/Model Evaluation."
 ## Feature Extraction
 **features_*.m:** Performs data epoching and categorization on currently loaded dataset. Displays overlays of epoch categories "All," "Left," "Right," and "Silence" for both signal channels. Uses *snip_recording.m* and *slice_recording.m*
 
-## File Organization
-
 
 <!-- **Trial_X.m:** plays an audio (X) of random type and displays the type. Useful for guessing. Packaged into PlaySoundSel(sel). <br/>
 
