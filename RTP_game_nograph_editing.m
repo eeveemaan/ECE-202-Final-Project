@@ -1042,7 +1042,7 @@ pBrainImg.XData = pBrain.imgX*(-1)^(gVal-1) + pBrain.ctr(gVal,1);
 
 % add arrow
 % [ADD CODE FOR ARROWS]
-qArrow = quiver(400*cos(tg)+2000, 1500-400*sin(tg), 500*cos(tg), -500*sin(tg), LineWidth=2);
+qArrow = quiver(400*cos(tg)+2000, 1500-400*sin(tg), 500*cos(tg), -500*sin(tg), LineWidth=2, Color='yellow');
 end
 
 
