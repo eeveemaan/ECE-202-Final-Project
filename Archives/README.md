@@ -1,40 +1,6 @@
-# ECE 202 Final Project
-### MindSwiper: Determining Sound Direction from EEG
-EEG-Controlled Game Demo presented in Winter 2024
+# ECE_202_Final_Project
 
-## General Environment
-- EEG Collection Software: Intan RHD recording system
-- Sampling rate: 5 kHz
-
-All Realtime files open a GUI for TCP connection, with options "run" and "stop" for streaming. Pressing "stop" saves all data from stream in folder "Private"
-The UI for RealTimeProcessing.m and RTP_GameDemo.m includes buttons:
-- "Plain Gaussian"/"Homophasic-Antiphasic": toggle between sound options
-- Play Sound: plays a 1s sound 1x
-- Loop sound: plays a 1s sound 10x
-- Calibrate: trains a sound guess model based on data recorded from the current session
-
-**RealTimeProcessing.m:** Upon clicking "run," loads a figure displaying the real time EEG waveforms of both channels in addition to a plot indicating the direction of actual sound direction (red) versus guessed direction (yellow). Files used: {*InitSound.m*, *PSS_AP.m*, *disp_arrows.m*}
-
-**RTP_GameDemo.m:** Upon clicking "run," loads the interactive EEG game. Files used: {*InitSound.m*, *PSS_AP.m*, *gameWindowSetup.m* "brain.png", "brain_straight.png", "swiper.png", "swiper_jerry.png", "unsettled_tom.jpg"}
-
-
-## Model Evaluation
-Code and data for model training and results, stored in "/Model Evaluation."
-
-**iterModels.m:** Iterates through different feature combinations to train either logistic regression (MNR) or Support Vector Machine (SVM) models.
-
-**TestTrainMNR.m:** Trains logistic regression (MNR) model using all data in "/Model Evaluation." Displays accuracy of test results.
-
-**TestTrainSVM.m:** Trains Support Vector Machine (SVM) model using all data in "/Model Evaluation." Displays accuracy of test results.
-
-
-## Feature Extraction
-**features_*.m:** Performs data epoching and categorization on currently loaded dataset. Displays overlays of epoch categories "All," "Left," "Right," and "Silence" for both signal channels. Uses *snip_recording.m* and *slice_recording.m*
-
-## File Organization
-
-
-<!-- **Trial_X.m:** plays an audio (X) of random type and displays the type. Useful for guessing. Packaged into PlaySoundSel(sel). <br/>
+**Trial_X.m:** plays an audio (X) of random type and displays the type. Useful for guessing. Packaged into PlaySoundSel(sel). <br/>
 
 **PlaySoundSel.m:** Sel= 1-Blackman filtered sine, 2-Blackman filtered gaussian. Line 38 initializes to 2. Can be changed via terminal. 
 3-Plain gaussian, 4-Homophasic-Antiphasic. Returns 1 or -1 depending on type played. <br/>
@@ -89,5 +55,3 @@ In slicerecording.m:
         - Easily adjust time window of epoch (%% Split out snippets block)
             - Amount of time before/after sound played
             - Will also need to adjust window of subsequent plot
-
--->
